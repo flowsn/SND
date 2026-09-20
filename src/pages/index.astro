@@ -683,7 +683,11 @@ const timingValues = [
       .alt-row-encoder{text-align:center;padding-bottom:8px}
       .encoder-face{width:64px;height:64px;margin:0 auto;border:2px solid #171717;border-radius:50%;background:#242424;position:relative}
       .encoder-face span{position:absolute;left:29px;top:6px;width:5px;height:24px;background:#fff;border-radius:2px;transform:rotate(8deg);transform-origin:2px 25px}
-      .alt-row-note{margin-top:8px;font-size:11px;line-height:1.45;color:#5b574e;max-width:780px}
+      .alt-row-note{margin-top:8px;font-size:11px;line-height:1.45;color:#5b574e;max-width:900px}
+      .gesture-note{display:block;margin-top:5px;font-size:8px;line-height:1.2;font-weight:700;color:#6a655b}
+      .alt-gesture-sequence{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:9px;padding:8px 10px;border:1px solid #c9c5ba;background:#f7f6f1}
+      .gesture-step{font-size:10px;font-weight:900;letter-spacing:.02em}
+      .gesture-arrow{font-size:12px;font-weight:900;color:#777166}
       @media(max-width:900px){.alt-row-hardware{overflow-x:auto;display:flex;align-items:flex-end}.alt-row-switch{min-width:78px}.alt-row-encoder{min-width:86px}}
       .alt-switch{width:44px;height:72px;position:relative}
       .alt-switch::before{content:'';position:absolute;left:20px;top:8px;width:4px;height:56px;border-radius:4px;background:#d3d0c7}
@@ -937,9 +941,10 @@ const timingValues = [
                   </div>
                   <div class="alt-row-switch selected">
                     <span class="top">A</span>
-                    <div class="mini-toggle"><i class="dot top active"></i><i class="dot mid"></i><i class="dot bottom"></i><i class="stick up"></i></div>
+                    <div class="mini-toggle option-gesture"><i class="dot top active"></i><i class="dot mid"></i><i class="dot bottom"></i><i class="stick up"></i></div>
                     <span class="bottom">B</span>
                     <strong>Option</strong>
+                    <span class="gesture-note">hold/select A while turning encoder</span>
                   </div>
                   <div class="alt-row-switch">
                     <span class="top">run</span>
@@ -964,7 +969,16 @@ const timingValues = [
                     <strong>Encoder</strong>
                   </div>
                 </div>
-                <div class="alt-row-note">To set Option A, briefly move the physical <strong>Option</strong> switch to <strong>A</strong>; with the switch in A, use the encoder to choose <strong>off or 1–15</strong>.</div>
+                <div class="alt-row-note"><strong>Programming gesture:</strong> briefly move/hold the physical <strong>Option</strong> switch in <strong>A</strong>, turn the encoder to choose <strong>off or 1–15</strong>, then let the switch return to the <strong>middle neutral position</strong>. After that, turning the encoder alone does not change Option A.</div>
+                <div class="alt-gesture-sequence" aria-label="Option A programming gesture">
+                  <span class="gesture-step">1 · Option ↑ A</span>
+                  <span class="gesture-arrow">→</span>
+                  <span class="gesture-step">2 · turn encoder</span>
+                  <span class="gesture-arrow">→</span>
+                  <span class="gesture-step">3 · release to center</span>
+                  <span class="gesture-arrow">→</span>
+                  <span class="gesture-step">4 · value stays stored</span>
+                </div>
               </div>
               <div class="alt-control">
                 <label for="altCount">ENCODER WITH OPTION A</label>
