@@ -361,37 +361,304 @@ const timingValues = [
         color:#555;
       }
 
-      /* Chord programming */
-      .chord-workflow{display:grid;grid-template-columns:minmax(260px,.72fr) minmax(420px,1.5fr);gap:22px;margin-top:22px}
-      .chord-panel{border:1px solid #cbc8bd;border-radius:10px;background:#fbfaf6;padding:18px}
-      .chord-panel h3{margin:0 0 14px;font-size:14px;letter-spacing:.02em}
-      .hardware-state{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
-      .state-pill{display:inline-flex;align-items:center;min-height:34px;padding:7px 10px;border:1px solid #aaa69a;background:#f3f1ea;font-size:12px;font-weight:800}
-      .state-pill.active{background:#171717;color:#fff;border-color:#171717}
-      .pitch-slot-control{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:18px;margin-top:16px}
-      .pitch-program-knob-shell{width:86px;height:86px;position:relative;border-radius:50%;outline:none;cursor:ns-resize;touch-action:none}
-      .pitch-program-knob-shell:focus-visible{box-shadow:0 0 0 3px rgba(23,23,23,.22)}
-      .pitch-program-knob{width:60px;height:60px;position:absolute;left:13px;top:13px;border:2px solid #222;border-radius:50%;background:#ebe9e2;box-shadow:inset 0 0 0 2px #f7f6f1}
-      .pitch-program-knob::after{content:'';position:absolute;width:2px;height:21px;left:27px;top:5px;background:#222;transform-origin:1px 25px;transform:rotate(var(--slot-angle))}
-      .pitch-slot-dot{position:absolute;width:4px;height:4px;border-radius:50%;background:#777;left:41px;top:2px;transform-origin:2px 41px;transform:rotate(var(--slot-dot-angle))}
-      .slot-readout{font-size:13px;line-height:1.45}.slot-readout strong{display:block;font-size:23px;line-height:1.1}
-      .slot-bank{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:15px}
-      .slot-button{min-width:0;padding:7px 4px;font-size:11px;font-weight:800}.slot-button.active{background:#171717;color:#fff;border-color:#171717}.slot-button.has-chord::after{content:' •'}
-      .program-instruction{margin-top:14px;padding:10px 12px;border-left:3px solid #171717;background:#f1efe7;font-size:13px;line-height:1.45}.program-instruction.locked{border-left-color:#999;color:#666}
-      .midi-note-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:5px;margin-top:14px}
-      .midi-note{min-width:0;padding:18px 2px;font-size:11px;font-weight:800;position:relative}
-      .midi-note.black-note{background:#292929;color:#fff}.midi-note.held{box-shadow:inset 0 0 0 3px #c33422}.midi-note.root-key::after{content:'1st';position:absolute;top:2px;right:2px;font-size:8px;background:#c33422;color:#fff;padding:2px 3px}
-      .midi-note:disabled{opacity:.42;cursor:not-allowed}
-      .held-notes{display:flex;gap:8px;align-items:center;flex-wrap:wrap;min-height:36px;margin-top:10px;font-size:12px}
-      .note-chip{display:inline-flex;gap:5px;align-items:center;border:1px solid #aaa69a;background:#f3f1ea;padding:5px 7px;border-radius:4px;font-weight:800}.note-chip.root{border-color:#c33422}
-      .store-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}.store-row button:disabled{opacity:.45;cursor:not-allowed}
-      .output-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
-      .output-box{border:1px solid #cbc8bd;background:#fff;border-radius:8px;padding:12px;min-height:96px}
-      .output-label{font-size:10px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:#5d594f}
-      .output-value{margin-top:9px;font-size:18px;font-weight:800;min-height:24px}
-      .output-box small{display:block;margin-top:6px;color:#666;line-height:1.35}
-      .root-explainer{margin-top:14px;font-size:12px;line-height:1.5;color:#555}
-      @media (max-width:900px){.chord-workflow{grid-template-columns:1fr}.output-grid{grid-template-columns:1fr}}
+      /* Reusable SAM hardware recipe language */
+      .hw-recipe {
+        margin-top:22px;
+        border:1px solid #cbc8bd;
+        border-radius:10px;
+        overflow:hidden;
+        background:#fbfaf6;
+      }
+      .hw-recipe-head {
+        padding:11px 14px;
+        border-bottom:1px solid #d8d5ca;
+        display:flex;
+        justify-content:space-between;
+        gap:16px;
+        align-items:center;
+        flex-wrap:wrap;
+        font-size:12px;
+      }
+      .hw-flow {
+        display:grid;
+        grid-template-columns:repeat(5,minmax(0,1fr));
+        align-items:stretch;
+      }
+      .hw-stage {
+        min-width:0;
+        padding:18px 14px 16px;
+        border-right:1px solid #d8d5ca;
+        position:relative;
+        text-align:center;
+      }
+      .hw-stage:last-child { border-right:0; }
+      .hw-stage::after {
+        content:'→';
+        position:absolute;
+        right:-10px;
+        top:50%;
+        transform:translateY(-50%);
+        width:20px;
+        height:20px;
+        display:grid;
+        place-items:center;
+        background:#fbfaf6;
+        font-size:17px;
+        font-weight:800;
+        z-index:4;
+      }
+      .hw-stage:last-child::after { display:none; }
+      .hw-kicker {
+        font-size:10px;
+        line-height:1.2;
+        min-height:24px;
+        font-weight:900;
+        letter-spacing:.07em;
+        text-transform:uppercase;
+        color:#5b574e;
+      }
+      .hw-action {
+        margin-top:10px;
+        min-height:38px;
+        font-size:13px;
+        line-height:1.4;
+        font-weight:800;
+      }
+      .hw-detail {
+        margin-top:8px;
+        font-size:11px;
+        line-height:1.4;
+        color:#666158;
+      }
+      .hw-step-badge {
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        min-width:72px;
+        padding:6px 9px;
+        margin:4px auto 8px;
+        border:2px solid #171717;
+        background:#171717;
+        color:#fff;
+        font-size:11px;
+        font-weight:900;
+        letter-spacing:.06em;
+      }
+      .hw-toggle {
+        width:72px;
+        height:94px;
+        position:relative;
+        margin:2px auto 4px;
+      }
+      .hw-toggle-track {
+        position:absolute;
+        left:34px;
+        top:9px;
+        width:4px;
+        height:75px;
+        border-radius:3px;
+        background:#d3d0c7;
+      }
+      .hw-toggle-pos {
+        position:absolute;
+        left:29px;
+        width:14px;
+        height:14px;
+        border:2px solid #858175;
+        border-radius:50%;
+        background:#fbfaf6;
+      }
+      .hw-toggle-pos.up { top:5px; }
+      .hw-toggle-pos.mid { top:39px; }
+      .hw-toggle-pos.down { top:73px; }
+      .hw-toggle-pos.active {
+        background:#171717;
+        border-color:#171717;
+      }
+      .hw-toggle-lever {
+        position:absolute;
+        left:34px;
+        top:14px;
+        width:4px;
+        height:45px;
+        background:#171717;
+        transform-origin:2px 37px;
+        transform:rotate(22deg);
+        border-radius:2px;
+      }
+      .hw-switch-labels {
+        position:absolute;
+        inset:0;
+        pointer-events:none;
+        font-size:9px;
+        font-weight:900;
+        text-align:left;
+      }
+      .hw-switch-labels span {
+        position:absolute;
+        left:47px;
+        white-space:nowrap;
+      }
+      .hw-switch-labels .up { top:5px; }
+      .hw-switch-labels .mid { top:39px; color:#999; }
+      .hw-switch-labels .down { top:73px; color:#999; }
+      .hw-mini-knob-shell {
+        width:82px;
+        height:82px;
+        margin:2px auto 5px;
+        position:relative;
+      }
+      .hw-mini-knob {
+        position:absolute;
+        width:56px;
+        height:56px;
+        left:13px;
+        top:13px;
+        border:2px solid #222;
+        border-radius:50%;
+        background:#ebe9e2;
+        box-shadow:inset 0 0 0 2px #f7f6f1;
+      }
+      .hw-mini-knob::after {
+        content:'';
+        position:absolute;
+        width:2px;
+        height:19px;
+        left:25px;
+        top:5px;
+        background:#222;
+        transform-origin:1px 23px;
+        transform:rotate(-68deg);
+      }
+      .hw-mini-dot {
+        position:absolute;
+        width:4px;
+        height:4px;
+        border-radius:50%;
+        background:#777;
+        left:39px;
+        top:1px;
+        transform-origin:2px 40px;
+      }
+      .hw-mini-dot:nth-child(1){transform:rotate(-150deg)}
+      .hw-mini-dot:nth-child(2){transform:rotate(-123deg)}
+      .hw-mini-dot:nth-child(3){transform:rotate(-95deg)}
+      .hw-mini-dot:nth-child(4){transform:rotate(-68deg);background:#171717;width:6px;height:6px}
+      .hw-mini-dot:nth-child(5){transform:rotate(-41deg)}
+      .hw-mini-dot:nth-child(6){transform:rotate(-14deg)}
+      .hw-mini-dot:nth-child(7){transform:rotate(14deg)}
+      .hw-mini-dot:nth-child(8){transform:rotate(41deg)}
+      .hw-mini-dot:nth-child(9){transform:rotate(68deg)}
+      .hw-mini-dot:nth-child(10){transform:rotate(95deg)}
+      .hw-mini-dot:nth-child(11){transform:rotate(123deg)}
+      .hw-mini-dot:nth-child(12){transform:rotate(150deg)}
+      .hw-midi-notes {
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        gap:5px;
+        flex-wrap:wrap;
+        min-height:82px;
+      }
+      .hw-note {
+        min-width:34px;
+        padding:8px 6px;
+        border:1px solid #99958a;
+        background:#fff;
+        font-size:12px;
+        font-weight:900;
+        position:relative;
+      }
+      .hw-note.first {
+        border:2px solid #171717;
+      }
+      .hw-note.first::before {
+        content:'1st';
+        position:absolute;
+        top:-17px;
+        left:50%;
+        transform:translateX(-50%);
+        font-size:8px;
+        letter-spacing:.05em;
+        background:#171717;
+        color:#fff;
+        padding:2px 4px;
+      }
+      .hw-release {
+        display:inline-block;
+        margin-top:6px;
+        padding:5px 8px;
+        border-top:1px solid #aaa69a;
+        font-size:10px;
+        font-weight:900;
+        letter-spacing:.05em;
+      }
+      .hw-result-card {
+        min-height:98px;
+        border:1px solid #aaa69a;
+        background:#fff;
+        padding:11px;
+        text-align:left;
+      }
+      .hw-result-line {
+        display:flex;
+        justify-content:space-between;
+        gap:10px;
+        padding:5px 0;
+        border-bottom:1px solid #ebe8df;
+        font-size:11px;
+      }
+      .hw-result-line:last-child { border-bottom:0; }
+      .hw-result-line strong { white-space:nowrap; }
+      .hw-root-example {
+        margin-top:16px;
+        display:grid;
+        grid-template-columns:1fr auto 1fr;
+        gap:14px;
+        align-items:center;
+        padding:14px;
+        background:#f7f6f1;
+        border-radius:8px;
+      }
+      .hw-root-example .example {
+        min-width:0;
+      }
+      .hw-root-example .example strong {
+        display:block;
+        margin-bottom:4px;
+      }
+      .hw-root-arrow {
+        font-weight:900;
+        font-size:20px;
+      }
+      .hw-language-key {
+        margin-top:14px;
+        display:flex;
+        gap:16px;
+        flex-wrap:wrap;
+        align-items:center;
+        font-size:11px;
+        color:#5b574e;
+      }
+      .hw-language-key strong { color:#171717; }
+      @media (max-width:900px) {
+        .hw-flow { grid-template-columns:1fr; }
+        .hw-stage {
+          border-right:0;
+          border-bottom:1px solid #d8d5ca;
+        }
+        .hw-stage:last-child { border-bottom:0; }
+        .hw-stage::after {
+          content:'↓';
+          right:auto;
+          left:50%;
+          top:auto;
+          bottom:-10px;
+          transform:translateX(-50%);
+        }
+        .hw-root-example { grid-template-columns:1fr; }
+        .hw-root-arrow { transform:rotate(90deg); justify-self:center; }
+      }
 
       @media (max-width:800px) {
         main { padding:24px 12px 60px; }
@@ -489,91 +756,105 @@ const timingValues = [
 
 
       <section class="card" id="chordProgramming">
-        <h2>Chord Programming + Root Note</h2>
+        <h2>Programming a Chord</h2>
         <p class="note">
-          In <strong>PROGRAM</strong>, the <strong>Step 1 Pitch selector</strong> chooses one of 12 programmable note/chord positions.
-          Play up to seven MIDI notes; releasing the keys stores them. The <strong>first note entered</strong> becomes the monophonic Pitch-CV note and,
-          in Dual/X-fade modes, the note sent on the adjacent MIDI channel.
+          The SAM stores programmable notes and chords through a short hardware sequence:
+          stop the machine, move <strong>Scale</strong> to <strong>PROGRAM</strong>, choose a memory position with
+          the <strong>Step 1 Pitch selector</strong>, play the chord through MIDI In, then release the keys to store it.
         </p>
 
-        <div class="chord-workflow">
-          <div class="chord-panel">
-            <h3>1 — Hardware state + memory position</h3>
-            <div class="hardware-state">
-              <button id="chordStop" class="state-pill active">STOPPED</button>
-              <button id="chordRun" class="state-pill">RUN</button>
-              <button id="chordProgram" class="state-pill">SCALE → PROGRAM</button>
-            </div>
-
-            <div class="hardware-caption">STEP 1 — PITCH SELECTOR</div>
-            <div class="pitch-slot-control">
-              <div class="pitch-program-knob-shell" id="pitchProgramKnob" role="slider" tabindex="0" aria-label="Step 1 Pitch selector" aria-valuemin="1" aria-valuemax="12" aria-valuenow="1">
-                <i class="pitch-slot-dot" style="--slot-dot-angle:-150deg"></i><i class="pitch-slot-dot" style="--slot-dot-angle:-123deg"></i>
-                <i class="pitch-slot-dot" style="--slot-dot-angle:-95deg"></i><i class="pitch-slot-dot" style="--slot-dot-angle:-68deg"></i>
-                <i class="pitch-slot-dot" style="--slot-dot-angle:-41deg"></i><i class="pitch-slot-dot" style="--slot-dot-angle:-14deg"></i>
-                <i class="pitch-slot-dot" style="--slot-dot-angle:14deg"></i><i class="pitch-slot-dot" style="--slot-dot-angle:41deg"></i>
-                <i class="pitch-slot-dot" style="--slot-dot-angle:68deg"></i><i class="pitch-slot-dot" style="--slot-dot-angle:95deg"></i>
-                <i class="pitch-slot-dot" style="--slot-dot-angle:123deg"></i><i class="pitch-slot-dot" style="--slot-dot-angle:150deg"></i>
-                <div class="pitch-program-knob" style="--slot-angle:-150deg"></div>
-              </div>
-              <div class="slot-readout">
-                <span>Selected programmable position</span>
-                <strong id="pitchSlotReadout">1 / 12</strong>
-                <span id="pitchSlotStored">empty</span>
-              </div>
-            </div>
-
-            <div class="slot-bank" id="pitchSlotBank">
-              <button class="slot-button active" data-slot="0">POS 1</button><button class="slot-button" data-slot="1">POS 2</button>
-              <button class="slot-button" data-slot="2">POS 3</button><button class="slot-button" data-slot="3">POS 4</button>
-              <button class="slot-button" data-slot="4">POS 5</button><button class="slot-button" data-slot="5">POS 6</button>
-              <button class="slot-button" data-slot="6">POS 7</button><button class="slot-button" data-slot="7">POS 8</button>
-              <button class="slot-button" data-slot="8">POS 9</button><button class="slot-button" data-slot="9">POS 10</button>
-              <button class="slot-button" data-slot="10">POS 11</button><button class="slot-button" data-slot="11">POS 12</button>
-            </div>
-
-            <div class="program-instruction locked" id="programInstruction">
-              STOP the SAM, then move the Scale switch to PROGRAM. Only then can the selected Pitch position be written.
-            </div>
+        <div class="hw-recipe">
+          <div class="hw-recipe-head">
+            <strong>HARDWARE RECIPE</strong>
+            <span>Read left → right</span>
           </div>
 
-          <div class="chord-panel">
-            <h3>2 — Play the chord from MIDI In</h3>
-            <p class="microcopy" style="margin-top:0">
-              This one-octave keyboard is a teaching view. Select notes in the order you would hold them on a MIDI keyboard. The first selected note is marked <strong>1st</strong>.
-            </p>
-
-            <div class="midi-note-grid" id="midiKeyboard">
-              <button class="midi-note" data-note="C" disabled>C</button>
-              <button class="midi-note black-note" data-note="C♯" disabled>C♯</button>
-              <button class="midi-note" data-note="D" disabled>D</button>
-              <button class="midi-note black-note" data-note="D♯" disabled>D♯</button>
-              <button class="midi-note" data-note="E" disabled>E</button>
-              <button class="midi-note" data-note="F" disabled>F</button>
-              <button class="midi-note black-note" data-note="F♯" disabled>F♯</button>
-              <button class="midi-note" data-note="G" disabled>G</button>
-              <button class="midi-note black-note" data-note="G♯" disabled>G♯</button>
-              <button class="midi-note" data-note="A" disabled>A</button>
-              <button class="midi-note black-note" data-note="A♯" disabled>A♯</button>
-              <button class="midi-note" data-note="B" disabled>B</button>
+          <div class="hw-flow">
+            <div class="hw-stage">
+              <div class="hw-kicker">Transport</div>
+              <div class="hw-step-badge">STOP</div>
+              <div class="hw-action">Stop the SAM</div>
+              <div class="hw-detail">Programming is only available while stopped.</div>
             </div>
 
-            <div class="held-notes" id="heldNotes"><span>No MIDI notes held.</span></div>
-            <div class="store-row">
-              <button id="storeChord" disabled>Release keys → Store</button>
-              <button id="clearHeld" disabled>Clear held notes</button>
+            <div class="hw-stage">
+              <div class="hw-kicker">Scale switch</div>
+              <div class="hw-toggle" aria-label="Scale switch in upper Program position">
+                <div class="hw-toggle-track"></div>
+                <i class="hw-toggle-pos up active"></i>
+                <i class="hw-toggle-pos mid"></i>
+                <i class="hw-toggle-pos down"></i>
+                <i class="hw-toggle-lever"></i>
+                <div class="hw-switch-labels">
+                  <span class="up">PROGRAM</span>
+                  <span class="mid">—</span>
+                  <span class="down">—</span>
+                </div>
+              </div>
+              <div class="hw-action">SCALE ↑ PROGRAM</div>
+              <div class="hw-detail">Move the Scale toggle to its upper programming position.</div>
             </div>
 
-            <div class="output-grid">
-              <div class="output-box"><div class="output-label">MIDI base channel</div><div class="output-value" id="baseChordOutput">—</div><small>Full programmed note/chord.</small></div>
-              <div class="output-box"><div class="output-label">Pitch CV</div><div class="output-value" id="pitchCvOutput">—</div><small>Monophonic: first-entered note.</small></div>
-              <div class="output-box"><div class="output-label">Adjacent MIDI channel</div><div class="output-value" id="adjacentOutput">—</div><small>First-entered note in Dual / X-fade modes.</small></div>
+            <div class="hw-stage">
+              <div class="hw-kicker">Memory position</div>
+              <div class="hw-step-badge">STEP 1</div>
+              <div class="hw-mini-knob-shell" aria-label="Step 1 Pitch selector">
+                <i class="hw-mini-dot"></i><i class="hw-mini-dot"></i><i class="hw-mini-dot"></i><i class="hw-mini-dot"></i>
+                <i class="hw-mini-dot"></i><i class="hw-mini-dot"></i><i class="hw-mini-dot"></i><i class="hw-mini-dot"></i>
+                <i class="hw-mini-dot"></i><i class="hw-mini-dot"></i><i class="hw-mini-dot"></i><i class="hw-mini-dot"></i>
+                <div class="hw-mini-knob"></div>
+              </div>
+              <div class="hw-action">PITCH → choose 1 of 12 positions</div>
+              <div class="hw-detail">Only the Step 1 Pitch selector chooses which programmable position you are editing.</div>
             </div>
 
-            <div class="root-explainer" id="rootExplainer">
-              Positions 1 and 2 start with the same C–E–G chord but different first-entered notes. Switch between them to see the SAM's root-note behavior.
+            <div class="hw-stage">
+              <div class="hw-kicker">MIDI In</div>
+              <div class="hw-midi-notes" aria-label="Example chord entry order E, G, C">
+                <span class="hw-note first">E</span>
+                <span>→</span>
+                <span class="hw-note">G</span>
+                <span>→</span>
+                <span class="hw-note">C</span>
+              </div>
+              <div class="hw-action">Play up to 7 notes</div>
+              <div class="hw-release">RELEASE KEYS → STORE</div>
+              <div class="hw-detail">The SAM provides software thru while you enter the chord.</div>
+            </div>
+
+            <div class="hw-stage">
+              <div class="hw-kicker">Stored result</div>
+              <div class="hw-result-card">
+                <div class="hw-result-line"><span>Programmed chord</span><strong>C · E · G</strong></div>
+                <div class="hw-result-line"><span>First-entered note</span><strong>E</strong></div>
+                <div class="hw-result-line"><span>Pitch CV</span><strong>E</strong></div>
+                <div class="hw-result-line"><span>Adjacent MIDI*</span><strong>E</strong></div>
+              </div>
+              <div class="hw-detail">* In Dual / X-fade modes.</div>
             </div>
           </div>
+        </div>
+
+        <div class="hw-root-example">
+          <div class="example">
+            <strong>Enter C first</strong>
+            C → E → G &nbsp; = &nbsp; stored chord C–E–G<br />
+            Monophonic / first-entered note: <strong>C</strong>
+          </div>
+          <div class="hw-root-arrow">↔</div>
+          <div class="example">
+            <strong>Enter E first</strong>
+            E → G → C &nbsp; = &nbsp; stored chord C–E–G<br />
+            Monophonic / first-entered note: <strong>E</strong>
+          </div>
+        </div>
+
+        <div class="hw-language-key">
+          <strong>Visual language:</strong>
+          <span>black badge = machine/step state</span>
+          <span>toggle drawing = physical switch position</span>
+          <span>knob + STEP label = exact hardware control</span>
+          <span>arrow = next physical action</span>
         </div>
       </section>
 
@@ -964,48 +1245,7 @@ const timingValues = [
         });
 
 
-        // Chord programming simulator
-        const chordStop = document.querySelector('#chordStop');
-        const chordRun = document.querySelector('#chordRun');
-        const chordProgram = document.querySelector('#chordProgram');
-        const programInstruction = document.querySelector('#programInstruction');
-        const pitchProgramKnob = document.querySelector('#pitchProgramKnob');
-        const pitchSlotReadout = document.querySelector('#pitchSlotReadout');
-        const pitchSlotStored = document.querySelector('#pitchSlotStored');
-        const pitchSlotButtons = [...document.querySelectorAll('.slot-button')];
-        const midiKeys = [...document.querySelectorAll('.midi-note')];
-        const heldNotesEl = document.querySelector('#heldNotes');
-        const storeChordBtn = document.querySelector('#storeChord');
-        const clearHeldBtn = document.querySelector('#clearHeld');
-        const baseChordOutput = document.querySelector('#baseChordOutput');
-        const pitchCvOutput = document.querySelector('#pitchCvOutput');
-        const adjacentOutput = document.querySelector('#adjacentOutput');
-        const rootExplainer = document.querySelector('#rootExplainer');
 
-        const pitchClassOrder = ['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'];
-        const chordSlots = Array.from({length:12}, () => ({notes:[], root:null}));
-        chordSlots[0] = {notes:['C','E','G'], root:'C'};
-        chordSlots[1] = {notes:['C','E','G'], root:'E'};
-
-        let chordTransportStopped = true;
-        let chordProgramMode = false;
-        let selectedPitchSlot = 0;
-        let heldOrder = [];
-
-        function chordSort(notes) {
-          return [...notes].sort((a,b) => pitchClassOrder.indexOf(a) - pitchClassOrder.indexOf(b));
-        }
-
-        function chordText(notes) {
-          return notes.length ? chordSort(notes).join(' · ') : '—';
-        }
-
-        function setChordTransport(stopped) {
-          chordTransportStopped = stopped;
-          chordStop.classList.toggle('active', stopped);
-          chordRun.classList.toggle('active', !stopped);
-          if (!stopped) chordProgramMode = false;
-          refreshChordProgramState();
         }
 
         function refreshChordProgramState() {
