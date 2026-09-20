@@ -10,7 +10,7 @@ const timingValues = [
 ];
 ---
 
-<html lang="en">
+<html lang="de">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
@@ -23,7 +23,25 @@ const timingValues = [
       }
       * { box-sizing: border-box; }
       body { margin: 0; }
-      main { max-width: 1380px; margin: 0 auto; padding: 36px 24px 80px; }
+      main { max-width: 1380px; margin: 0 auto; padding: 24px 24px 80px; }
+      .page-topbar {
+        display:flex;
+        justify-content:flex-end;
+        align-items:center;
+        gap:10px;
+        margin-bottom:20px;
+      }
+      .page-topbar label {
+        margin:0;
+        font-size:11px;
+        font-weight:900;
+        letter-spacing:.06em;
+        text-transform:uppercase;
+      }
+      .page-topbar select { min-width:118px; }
+      .lang-en { display:none; }
+      body.lang-en-active .lang-de { display:none; }
+      body.lang-en-active .lang-en { display:initial; }
       h1,h2 { letter-spacing: -.025em; }
       .card {
         background: #fff;
@@ -736,21 +754,31 @@ const timingValues = [
   </head>
   <body>
     <main>
-      <h1>SND SAM-16 Online Manual</h1>
-      <p>Interactive documentation prototype.</p>
+      <div class="page-topbar">
+        <label for="languageSelect"><span class="lang-de">Sprache</span><span class="lang-en">Language</span></label>
+        <select id="languageSelect" aria-label="Sprache / Language">
+          <option value="de" selected>Deutsch</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+      <h1><span class="lang-de">SND SAM-16 Online-Handbuch</span><span class="lang-en">SND SAM-16 Online Manual</span></h1>
+      <p><span class="lang-de">Interaktiver Dokumentations-Prototyp.</span><span class="lang-en">Interactive documentation prototype.</span></p>
 
       <section class="card">
-        <h2>Variable Timing + ALIGN</h2>
+        <h2><span class="lang-de">Variable Zeitsteuerung + ALIGN</span><span class="lang-en">Variable Timing + ALIGN</span></h2>
         <p class="note">
-          In <strong>var.</strong> mode, <strong>Row 3</strong> sets the duration of each step.
+          <span class="lang-de">Im <strong>var.</strong>-Modus bestimmt <strong>Reihe 3</strong> die Dauer jedes Schritts.
+          Wird ein Regler der Reihe 3 ganz nach rechts auf <strong>ALIGN</strong> gestellt, wartet der SAM an diesem
+          Punkt bis zum Ende des aktuellen Takts. Die globale Einstellung <strong>Align</strong> bestimmt die Länge dieses Takts.</span>
+          <span class="lang-en">In <strong>var.</strong> mode, <strong>Row 3</strong> sets the duration of each step.
           Turn a Row 3 knob fully clockwise to <strong>ALIGN</strong> and the SAM holds at that
           point until the end of the current measure. The global <strong>Align</strong> setting
-          defines the length of that measure.
+          defines the length of that measure.</span>
         </p>
 
         <div class="controls">
           <div>
-            <label for="align">GLOBAL ALIGN — measure length</label>
+            <label for="align"><span class="lang-de">GLOBAL ALIGN — Taktlänge</span><span class="lang-en">GLOBAL ALIGN — measure length</span></label>
             <div class="control-group">
               <select id="align">
                 {Array.from({length:16}, (_,i) => <option value={i+1} selected={i===7}>{i+1}/8</option>)}
@@ -758,15 +786,15 @@ const timingValues = [
             </div>
           </div>
           <div>
-            <label>TRANSPORT</label>
+            <label><span class="lang-de">TRANSPORT</span><span class="lang-en">TRANSPORT</span></label>
             <div class="control-group">
-              <button id="play">Play</button>
-              <button id="reset">Reset</button>
+              <button id="play">Start</button>
+              <button id="reset">Zurücksetzen</button>
             </div>
           </div>
         </div>
 
-        <div class="hardware-caption">ROW 3 — step length in VAR mode</div>
+        <div class="hardware-caption"><span class="lang-de">REIHE 3 — Schrittlänge im VAR-Modus</span><span class="lang-en">ROW 3 — step length in VAR mode</span></div>
 
         <div class="steps-wrap">
           <div class="steps" id="steps">
@@ -794,14 +822,14 @@ const timingValues = [
         </div>
 
         <div class="explain-strip">
-          <span><strong>Timeline:</strong></span>
-          <span class="legend-chip"><span class="legend-swatch"></span> each numbered block = one SAM step</span>
-          <span class="legend-chip"><span class="legend-swatch align"></span> ALIGN = wait to the next measure boundary</span>
+          <span><strong><span class="lang-de">Zeitleiste:</span><span class="lang-en">Timeline:</span></strong></span>
+          <span class="legend-chip"><span class="legend-swatch"></span><span class="lang-de"> jeder nummerierte Block = ein SAM-Schritt</span><span class="lang-en"> each numbered block = one SAM step</span></span>
+          <span class="legend-chip"><span class="legend-swatch align"></span><span class="lang-de"> ALIGN = bis zur nächsten Taktgrenze warten</span><span class="lang-en"> ALIGN = wait to the next measure boundary</span></span>
         </div>
 
         <div class="timeline-shell">
           <div class="timeline-toolbar">
-            <strong>WHAT THE SAM IS DOING OVER TIME</strong>
+            <strong><span class="lang-de">WAS DER SAM ÜBER DIE ZEIT MACHT</span><span class="lang-en">WHAT THE SAM IS DOING OVER TIME</span></strong>
             <span id="measureInfo">Align = 8/8</span>
           </div>
           <div class="timeline-scroll" id="timelineScroll">
@@ -809,44 +837,48 @@ const timingValues = [
               <div class="ruler" id="ruler"></div>
               <div class="sequence-track" id="sequenceTrack"></div>
               <div class="reference-track" id="referenceTrack">
-                <span class="reference-label">STRAIGHT 16TH GRID</span>
+                <span class="reference-label"><span class="lang-de">GERADES 16TEL-RASTER</span><span class="lang-en">STRAIGHT 16TH GRID</span></span>
               </div>
               <div class="playhead" id="playhead"></div>
             </div>
           </div>
-          <div class="status" id="status">Stopped — Step 1</div>
+          <div class="status" id="status">Gestoppt — Schritt 1</div>
         </div>
 
         <p class="microcopy">
-          Drag a Row 3 knob up or down to move through its detents. The upper lane shows the SAM timing; the straight 16th grid underneath stays fixed. The display always covers 16/8. Changing Global Align moves only the measure boundaries unless a step is actually set to ALIGN.
+          <span class="lang-de">Ziehe einen Regler der Reihe 3 nach oben oder unten, um durch seine Raststellungen zu gehen. Die obere Spur zeigt das SAM-Timing; das gerade 16tel-Raster darunter bleibt fest. Die Anzeige umfasst immer 16/8. Eine Änderung von Global Align verschiebt nur die Taktgrenzen, solange kein Schritt tatsächlich auf ALIGN steht.</span>
+          <span class="lang-en">Drag a Row 3 knob up or down to move through its detents. The upper lane shows the SAM timing; the straight 16th grid underneath stays fixed. The display always covers 16/8. Changing Global Align moves only the measure boundaries unless a step is actually set to ALIGN.</span>
         </p>
       </section>
 
 
       <section class="card" id="chordProgramming">
-        <h2>Programming a Chord</h2>
+        <h2><span class="lang-de">Akkord programmieren</span><span class="lang-en">Programming a Chord</span></h2>
         <p class="note">
-          The SAM stores programmable notes and chords through a short hardware sequence:
+          <span class="lang-de">Der SAM speichert programmierbare Noten und Akkorde über eine kurze Hardware-Abfolge:
+          Gerät stoppen, <strong>Scale</strong> auf <strong>PROGRAM</strong> stellen, mit dem <strong>Pitch-Wahlschalter von Schritt 1</strong>
+          einen Speicherplatz wählen, den Akkord über MIDI In spielen und anschließend die Tasten loslassen, um ihn zu speichern.</span>
+          <span class="lang-en">The SAM stores programmable notes and chords through a short hardware sequence:
           stop the machine, move <strong>Scale</strong> to <strong>PROGRAM</strong>, choose a memory position with
-          the <strong>Step 1 Pitch selector</strong>, play the chord through MIDI In, then release the keys to store it.
+          the <strong>Step 1 Pitch selector</strong>, play the chord through MIDI In, then release the keys to store it.</span>
         </p>
 
         <div class="hw-recipe">
           <div class="hw-recipe-head">
-            <strong>HARDWARE RECIPE</strong>
-            <span>Read left → right</span>
+            <strong><span class="lang-de">HARDWARE-ABLAUF</span><span class="lang-en">HARDWARE RECIPE</span></strong>
+            <span><span class="lang-de">Von links → rechts lesen</span><span class="lang-en">Read left → right</span></span>
           </div>
 
           <div class="hw-flow">
             <div class="hw-stage">
-              <div class="hw-kicker">Transport</div>
+              <div class="hw-kicker"><span class="lang-de">Transport</span><span class="lang-en">Transport</span></div>
               <div class="hw-step-badge">STOP</div>
-              <div class="hw-action">Stop the SAM</div>
-              <div class="hw-detail">Programming is only available while stopped.</div>
+              <div class="hw-action"><span class="lang-de">SAM stoppen</span><span class="lang-en">Stop the SAM</span></div>
+              <div class="hw-detail"><span class="lang-de">Programmierung ist nur im gestoppten Zustand möglich.</span><span class="lang-en">Programming is only available while stopped.</span></div>
             </div>
 
             <div class="hw-stage">
-              <div class="hw-kicker">Scale switch</div>
+              <div class="hw-kicker"><span class="lang-de">Scale-Schalter</span><span class="lang-en">Scale switch</span></div>
               <div class="hw-toggle" aria-label="Scale switch in upper Program position">
                 <div class="hw-toggle-track"></div>
                 <i class="hw-toggle-pos up active"></i>
@@ -860,11 +892,11 @@ const timingValues = [
                 </div>
               </div>
               <div class="hw-action">SCALE ↑ PROGRAM</div>
-              <div class="hw-detail">Move the Scale toggle to its upper programming position.</div>
+              <div class="hw-detail"><span class="lang-de">Scale-Kippschalter in die obere PROGRAM-Stellung bringen.</span><span class="lang-en">Move the Scale toggle to its upper programming position.</span></div>
             </div>
 
             <div class="hw-stage">
-              <div class="hw-kicker">Memory position</div>
+              <div class="hw-kicker"><span class="lang-de">Speicherposition</span><span class="lang-en">Memory position</span></div>
               <div class="hw-step-badge">STEP 1</div>
               <div class="hw-mini-knob-shell" aria-label="Step 1 Pitch selector">
                 <i class="hw-mini-dot"></i><i class="hw-mini-dot"></i><i class="hw-mini-dot"></i><i class="hw-mini-dot"></i>
@@ -872,8 +904,8 @@ const timingValues = [
                 <i class="hw-mini-dot"></i><i class="hw-mini-dot"></i><i class="hw-mini-dot"></i><i class="hw-mini-dot"></i>
                 <div class="hw-mini-knob"></div>
               </div>
-              <div class="hw-action">PITCH → choose 1 of 12 positions</div>
-              <div class="hw-detail">Only the Step 1 Pitch selector chooses which programmable position you are editing.</div>
+              <div class="hw-action"><span class="lang-de">PITCH → 1 von 12 Positionen wählen</span><span class="lang-en">PITCH → choose 1 of 12 positions</span></div>
+              <div class="hw-detail"><span class="lang-de">Nur der Pitch-Wahlschalter von Schritt 1 bestimmt, welche programmierbare Position bearbeitet wird.</span><span class="lang-en">Only the Step 1 Pitch selector chooses which programmable position you are editing.</span></div>
             </div>
 
             <div class="hw-stage">
@@ -885,62 +917,65 @@ const timingValues = [
                 <span>→</span>
                 <span class="hw-note">C</span>
               </div>
-              <div class="hw-action">Play up to 7 notes</div>
-              <div class="hw-release">RELEASE KEYS → STORE</div>
-              <div class="hw-detail">The SAM provides software thru while you enter the chord.</div>
+              <div class="hw-action"><span class="lang-de">Bis zu 7 Noten spielen</span><span class="lang-en">Play up to 7 notes</span></div>
+              <div class="hw-release"><span class="lang-de">TASTEN LOSLASSEN → SPEICHERN</span><span class="lang-en">RELEASE KEYS → STORE</span></div>
+              <div class="hw-detail"><span class="lang-de">Während der Akkordeingabe ist Software-Thru aktiv.</span><span class="lang-en">The SAM provides software thru while you enter the chord.</span></div>
             </div>
 
             <div class="hw-stage">
-              <div class="hw-kicker">Stored result</div>
+              <div class="hw-kicker"><span class="lang-de">Gespeichertes Ergebnis</span><span class="lang-en">Stored result</span></div>
               <div class="hw-result-card">
-                <div class="hw-result-line"><span>Programmed chord</span><strong>C · E · G</strong></div>
-                <div class="hw-result-line"><span>First-entered note</span><strong>E</strong></div>
+                <div class="hw-result-line"><span><span class="lang-de">Programmierter Akkord</span><span class="lang-en">Programmed chord</span></span><strong>C · E · G</strong></div>
+                <div class="hw-result-line"><span><span class="lang-de">Zuerst eingegebene Note</span><span class="lang-en">First-entered note</span></span><strong>E</strong></div>
                 <div class="hw-result-line"><span>Pitch CV</span><strong>E</strong></div>
-                <div class="hw-result-line"><span>Adjacent MIDI*</span><strong>E</strong></div>
+                <div class="hw-result-line"><span><span class="lang-de">Benachbarter MIDI-Kanal*</span><span class="lang-en">Adjacent MIDI*</span></span><strong>E</strong></div>
               </div>
-              <div class="hw-detail">* In Dual / X-fade modes.</div>
+              <div class="hw-detail"><span class="lang-de">* In Dual-/X-fade-Modi.</span><span class="lang-en">* In Dual / X-fade modes.</span></div>
             </div>
           </div>
         </div>
 
         <div class="hw-root-example">
           <div class="example">
-            <strong>Enter C first</strong>
+            <strong><span class="lang-de">C zuerst eingeben</span><span class="lang-en">Enter C first</span></strong>
             C → E → G &nbsp; = &nbsp; stored chord C–E–G<br />
-            Monophonic / first-entered note: <strong>C</strong>
+            <span class="lang-de">Monophon / zuerst eingegebene Note: <strong>C</strong></span><span class="lang-en">Monophonic / first-entered note: <strong>C</strong></span>
           </div>
           <div class="hw-root-arrow">↔</div>
           <div class="example">
-            <strong>Enter E first</strong>
+            <strong><span class="lang-de">E zuerst eingeben</span><span class="lang-en">Enter E first</span></strong>
             E → G → C &nbsp; = &nbsp; stored chord C–E–G<br />
-            Monophonic / first-entered note: <strong>E</strong>
+            <span class="lang-de">Monophon / zuerst eingegebene Note: <strong>E</strong></span><span class="lang-en">Monophonic / first-entered note: <strong>E</strong></span>
           </div>
         </div>
 
         <div class="hw-language-key">
-          <strong>Visual language:</strong>
-          <span>black badge = machine/step state</span>
-          <span>toggle drawing = physical switch position</span>
-          <span>knob + STEP label = exact hardware control</span>
-          <span>arrow = next physical action</span>
+          <strong><span class="lang-de">Visuelle Sprache:</span><span class="lang-en">Visual language:</span></strong>
+          <span><span class="lang-de">schwarzes Feld = Geräte-/Schrittstatus</span><span class="lang-en">black badge = machine/step state</span></span>
+          <span><span class="lang-de">Kippschalter-Grafik = physische Schalterstellung</span><span class="lang-en">toggle drawing = physical switch position</span></span>
+          <span><span class="lang-de">Regler + STEP = exaktes Hardware-Bedienelement</span><span class="lang-en">knob + STEP label = exact hardware control</span></span>
+          <span><span class="lang-de">Pfeil = nächste physische Aktion</span><span class="lang-en">arrow = next physical action</span></span>
         </div>
       </section>
 
 
 
       <section class="card" id="optionA">
-        <h2>Option A — Alternating Mode</h2>
+        <h2><span class="lang-de">Option A — alternierender Betrieb</span><span class="lang-en">Option A — Alternating Mode</span></h2>
         <p class="note">
-          Option A does not simply select “Steps 1–8” versus “Steps 9–16”. It changes the <strong>start position</strong> of the sequence by <strong>8 steps</strong>.
+          <span class="lang-de">Option A wählt nicht einfach „Schritte 1–8“ gegen „Schritte 9–16“. Stattdessen wird die <strong>Startposition</strong> der Sequenz um <strong>8 Schritte</strong> verschoben.
+          Im folgenden 16-Schritt-Beispiel läuft ein normaler Durchgang von <strong>1 → 16</strong>; der verschobene Durchgang startet bei <strong>9</strong>, läuft nach 16 bei <strong>1</strong> weiter und endet bei <strong>8</strong>.
+          <strong>off</strong> verwendet immer den verschobenen Start. Die Werte <strong>1–15</strong> bestimmen, nach wie vielen Durchläufen die Startposition um +8 verschoben wird.</span>
+          <span class="lang-en">Option A does not simply select “Steps 1–8” versus “Steps 9–16”. It changes the <strong>start position</strong> of the sequence by <strong>8 steps</strong>.
           In the 16-step example below, a normal run is <strong>1 → 16</strong>; the shifted run starts at <strong>9</strong>, wraps after 16, and continues <strong>1 → 8</strong>.
-          <strong>off</strong> always uses the shifted start. Values <strong>1–15</strong> determine after how many runs that +8 start shift occurs.
+          <strong>off</strong> always uses the shifted start. Values <strong>1–15</strong> determine after how many runs that +8 start shift occurs.</span>
         </p>
 
         <div class="alt-shell">
           <div class="alt-toolbar">
             <div class="alt-controls">
               <div class="alt-control">
-                <label>GLOBAL SWITCH ROW</label>
+                <label><span class="lang-de">GLOBALE SCHALTERREIHE</span><span class="lang-en">GLOBAL SWITCH ROW</span></label>
                 <div class="alt-row-hardware" aria-label="SAM-16 global switch row with Option switch in A position">
                   <div class="alt-row-switch">
                     <span class="top">Note</span>
@@ -959,7 +994,7 @@ const timingValues = [
                     <div class="mini-toggle option-gesture"><i class="dot top active"></i><i class="dot mid"></i><i class="dot bottom"></i><i class="stick up"></i></div>
                     <span class="bottom">B</span>
                     <strong>Option</strong>
-                    <span class="gesture-note">hold/select A while turning encoder</span>
+                    <span class="gesture-note"><span class="lang-de">A halten/anwählen und dabei Encoder drehen</span><span class="lang-en">hold/select A while turning encoder</span></span>
                   </div>
                   <div class="alt-row-switch">
                     <span class="top">run</span>
@@ -984,40 +1019,40 @@ const timingValues = [
                     <strong>Encoder</strong>
                   </div>
                 </div>
-                <div class="alt-row-note"><strong>Programming gesture:</strong> briefly move/hold the physical <strong>Option</strong> switch in <strong>A</strong>, turn the encoder to choose <strong>off or 1–15</strong>, then let the switch return to the <strong>middle neutral position</strong>. After that, turning the encoder alone does not change Option A.</div>
+                <div class="alt-row-note"><span class="lang-de"><strong>Programmier-Geste:</strong> den physischen <strong>Option</strong>-Schalter kurz in Stellung <strong>A</strong> bringen/halten, mit dem Encoder <strong>off oder 1–15</strong> wählen und den Schalter anschließend in die <strong>neutrale Mittelstellung</strong> zurückkehren lassen. Danach verändert das Drehen des Encoders allein Option A nicht.</span><span class="lang-en"><strong>Programming gesture:</strong> briefly move/hold the physical <strong>Option</strong> switch in <strong>A</strong>, turn the encoder to choose <strong>off or 1–15</strong>, then let the switch return to the <strong>middle neutral position</strong>. After that, turning the encoder alone does not change Option A.</span></div>
                 <div class="alt-gesture-sequence" aria-label="Option A programming gesture">
                   <span class="gesture-step">1 · Option ↑ A</span>
                   <span class="gesture-arrow">→</span>
-                  <span class="gesture-step">2 · turn encoder</span>
+                  <span class="gesture-step"><span class="lang-de">2 · Encoder drehen</span><span class="lang-en">2 · turn encoder</span></span>
                   <span class="gesture-arrow">→</span>
-                  <span class="gesture-step">3 · release to center</span>
+                  <span class="gesture-step"><span class="lang-de">3 · zurück zur Mitte</span><span class="lang-en">3 · release to center</span></span>
                   <span class="gesture-arrow">→</span>
-                  <span class="gesture-step">4 · value stays stored</span>
+                  <span class="gesture-step"><span class="lang-de">4 · Wert bleibt gespeichert</span><span class="lang-en">4 · value stays stored</span></span>
                 </div>
               </div>
               <div class="alt-control">
-                <label for="altCount">ENCODER WITH OPTION A</label>
+                <label for="altCount"><span class="lang-de">ENCODER MIT OPTION A</span><span class="lang-en">ENCODER WITH OPTION A</span></label>
                 <select id="altCount">
                   <option value="off">off</option>
                   <option value="1" selected>1</option><option value="2" >2</option><option value="3" >3</option><option value="4" >4</option><option value="5" >5</option><option value="6" >6</option><option value="7" >7</option><option value="8" >8</option><option value="9" >9</option><option value="10" >10</option><option value="11" >11</option><option value="12" >12</option><option value="13" >13</option><option value="14" >14</option><option value="15" >15</option>
                 </select>
               </div>
               <div class="alt-control">
-                <label>EXAMPLE ASSUMPTION</label>
-                <div class="alt-assumption">16th mode · Align 16/8 · no earlier Reset</div>
+                <label><span class="lang-de">ANNAHME FÜR DIESES BEISPIEL</span><span class="lang-en">EXAMPLE ASSUMPTION</span></label>
+                <div class="alt-assumption"><span class="lang-de">16th-Modus · Align 16/8 · kein früherer Reset</span><span class="lang-en">16th mode · Align 16/8 · no earlier Reset</span></div>
               </div>
             </div>
             <div>
-              <button id="altPlay">Play</button>
-              <button id="altReset">Reset</button>
+              <button id="altPlay">Start</button>
+              <button id="altReset">Zurücksetzen</button>
             </div>
           </div>
 
           <div class="alt-paths" aria-label="Normal and shifted sequence order">
             <div class="alt-path-row" id="altNormalRow">
               <div class="alt-path-label">
-                <strong>NORMAL START</strong>
-                <span>starts at Step 1</span>
+                <strong><span class="lang-de">NORMALER START</span><span class="lang-en">NORMAL START</span></strong>
+                <span><span class="lang-de">startet bei Schritt 1</span><span class="lang-en">starts at Step 1</span></span>
               </div>
               <div class="alt-path-steps">
                 <div class="alt-path-step" data-normal-pos="0" data-step="1">1</div><div class="alt-path-step" data-normal-pos="1" data-step="2">2</div><div class="alt-path-step" data-normal-pos="2" data-step="3">3</div><div class="alt-path-step" data-normal-pos="3" data-step="4">4</div><div class="alt-path-step" data-normal-pos="4" data-step="5">5</div><div class="alt-path-step" data-normal-pos="5" data-step="6">6</div><div class="alt-path-step" data-normal-pos="6" data-step="7">7</div><div class="alt-path-step" data-normal-pos="7" data-step="8">8</div><div class="alt-path-step" data-normal-pos="8" data-step="9">9</div><div class="alt-path-step" data-normal-pos="9" data-step="10">10</div><div class="alt-path-step" data-normal-pos="10" data-step="11">11</div><div class="alt-path-step" data-normal-pos="11" data-step="12">12</div><div class="alt-path-step" data-normal-pos="12" data-step="13">13</div><div class="alt-path-step" data-normal-pos="13" data-step="14">14</div><div class="alt-path-step" data-normal-pos="14" data-step="15">15</div><div class="alt-path-step" data-normal-pos="15" data-step="16">16</div>
@@ -1025,8 +1060,8 @@ const timingValues = [
             </div>
             <div class="alt-path-row shifted" id="altShiftedRow">
               <div class="alt-path-label">
-                <strong>+8 SHIFTED START</strong>
-                <span>starts at Step 9, wraps after 16</span>
+                <strong><span class="lang-de">UM +8 VERSCHOBENER START</span><span class="lang-en">+8 SHIFTED START</span></strong>
+                <span><span class="lang-de">startet bei Schritt 9, nach 16 weiter bei 1</span><span class="lang-en">starts at Step 9, wraps after 16</span></span>
               </div>
               <div class="alt-path-steps">
                 <div class="alt-path-step" data-shifted-pos="0" data-step="9">9</div><div class="alt-path-step" data-shifted-pos="1" data-step="10">10</div><div class="alt-path-step" data-shifted-pos="2" data-step="11">11</div><div class="alt-path-step" data-shifted-pos="3" data-step="12">12</div><div class="alt-path-step" data-shifted-pos="4" data-step="13">13</div><div class="alt-path-step" data-shifted-pos="5" data-step="14">14</div><div class="alt-path-step" data-shifted-pos="6" data-step="15">15</div><div class="alt-path-step" data-shifted-pos="7" data-step="16">16</div><div class="alt-path-step" data-shifted-pos="8" data-step="1">1</div><div class="alt-path-step" data-shifted-pos="9" data-step="2">2</div><div class="alt-path-step" data-shifted-pos="10" data-step="3">3</div><div class="alt-path-step" data-shifted-pos="11" data-step="4">4</div><div class="alt-path-step" data-shifted-pos="12" data-step="5">5</div><div class="alt-path-step" data-shifted-pos="13" data-step="6">6</div><div class="alt-path-step" data-shifted-pos="14" data-step="7">7</div><div class="alt-path-step" data-shifted-pos="15" data-step="8">8</div>
@@ -1036,23 +1071,36 @@ const timingValues = [
 
           <div class="alt-status">
             <div>
-              <div class="alt-status-main" id="altStatus">Ready — Option A = 1 alternates the start position every run.</div>
+              <div class="alt-status-main" id="altStatus">Bereit — Option A = 1 wechselt die Startposition nach jedem Durchlauf.</div>
               <div class="alt-run-badges" id="altRunBadges"></div>
             </div>
             <div class="alt-order-key">
-              <strong id="altOrderTitle">Next run: normal start</strong>
+              <strong id="altOrderTitle">Nächster Durchlauf: normaler Start</strong>
               <small id="altOrderText">1 → 2 → … → 16</small>
             </div>
           </div>
 
           <div class="alt-note" id="altNote">
-            <strong>Verified core:</strong> Option A shifts the sequence start by 8 steps. In the documented 16/8 + 16th example, the complete 16-step sequence is played once normally and once with the start shifted by 8 steps. <strong>off</strong> always starts at Step 9; <strong>1</strong> changes the start position every run.
-            <span class="alt-verify">2–15: exact repeating cycle still needs hardware verification</span>
+            <span class="lang-de"><strong>Verifizierter Kern:</strong> Option A verschiebt den Sequenzstart um 8 Schritte. Im dokumentierten Beispiel mit 16/8 + 16th wird die vollständige 16-Schritt-Sequenz einmal normal und einmal mit um 8 Schritte verschobenem Start gespielt. <strong>off</strong> startet immer bei Schritt 9; <strong>1</strong> ändert die Startposition nach jedem Durchlauf.</span><span class="lang-en"><strong>Verified core:</strong> Option A shifts the sequence start by 8 steps. In the documented 16/8 + 16th example, the complete 16-step sequence is played once normally and once with the start shifted by 8 steps. <strong>off</strong> always starts at Step 9; <strong>1</strong> changes the start position every run.</span>
+            <span class="alt-verify"><span class="lang-de">2–15: exakter Wiederholungszyklus muss noch an der Hardware geprüft werden</span><span class="lang-en">2–15: exact repeating cycle still needs hardware verification</span></span>
           </div>
         </div>
       </section>
 
       <script is:inline>
+        let currentLang = 'de';
+        const languageSelect = document.querySelector('#languageSelect');
+        function L(de, en) { return currentLang === 'de' ? de : en; }
+        function setLanguage(lang) {
+          currentLang = lang === 'en' ? 'en' : 'de';
+          document.documentElement.lang = currentLang;
+          document.body.classList.toggle('lang-en-active', currentLang === 'en');
+          if (typeof redraw === 'function') redraw();
+          if (typeof resetTransport === 'function') resetTransport(L('Gestoppt — Schritt 1','Stopped — Step 1'));
+          if (typeof resetAlt === 'function') resetAlt();
+        }
+        languageSelect.addEventListener('change', () => setLanguage(languageSelect.value));
+
         const eighthMs = 240;
         let pxPerEighth = 48;
 
@@ -1147,7 +1195,7 @@ const timingValues = [
           const available = Math.max(1, timelineScroll.clientWidth || stage.parentElement.clientWidth || 1);
           pxPerEighth = available / horizon;
           stage.style.width = '100%';
-          measureInfo.textContent = `Fixed view: 16/8 · Align boundaries every ${measure}/8`;
+          measureInfo.textContent = L(`Feste Ansicht: 16/8 · Align-Grenzen alle ${measure}/8`, `Fixed view: 16/8 · Align boundaries every ${measure}/8`);
 
           const measureCount = Math.ceil(horizon / measure);
 
@@ -1302,12 +1350,12 @@ const timingValues = [
 
           if (value === -1) {
             duration = nextBoundary(pos, measure) - pos;
-            description = `Step ${stepIndex + 1}: ALIGN — wait ${duration}/8 until the next measure boundary`;
+            description = L(`Schritt ${stepIndex + 1}: ALIGN — ${duration}/8 bis zur nächsten Taktgrenze warten`, `Step ${stepIndex + 1}: ALIGN — wait ${duration}/8 until the next measure boundary`);
           } else if (value === 0) {
             duration = 0;
-            description = `Step ${stepIndex + 1}: SKIP`;
+            description = L(`Schritt ${stepIndex + 1}: SKIP`, `Step ${stepIndex + 1}: SKIP`);
           } else {
-            description = `Step ${stepIndex + 1}: ${timingOptions[currentIndex(stepEl)].label}`;
+            description = L(`Schritt ${stepIndex + 1}: ${timingOptions[currentIndex(stepEl)].label}`, `Step ${stepIndex + 1}: ${timingOptions[currentIndex(stepEl)].label}`);
           }
 
           const horizon = horizonEighths();
@@ -1329,8 +1377,8 @@ const timingValues = [
               timer = setTimeout(() => {
                 running = false;
                 clearActive();
-                document.querySelector('#play').textContent = 'Play';
-                status.textContent = `End of fixed 16/8 view — SAM continues with Step ${nextHardwareStep + 1}`;
+                document.querySelector('#play').textContent = L('Start','Play');
+                status.textContent = L(`Ende der festen 16/8-Ansicht — SAM läuft mit Schritt ${nextHardwareStep + 1} weiter`, `End of fixed 16/8 view — SAM continues with Step ${nextHardwareStep + 1}`);
               }, delay);
               return;
             }
@@ -1345,12 +1393,12 @@ const timingValues = [
 
         document.querySelector('#play').onclick = () => {
           running = !running;
-          document.querySelector('#play').textContent = running ? 'Pause' : 'Play';
+          document.querySelector('#play').textContent = running ? 'Pause' : L('Start','Play');
           if (running) advance();
           else clearTimeout(timer);
         };
 
-        function resetTransport(message = 'Stopped — Step 1') {
+        function resetTransport(message = L('Gestoppt — Schritt 1','Stopped — Step 1')) {
           running = false;
           clearTimeout(timer);
           clearActive();
@@ -1359,7 +1407,7 @@ const timingValues = [
           playhead.style.left = '0px';
           timelineScroll.scrollLeft = 0;
           status.textContent = message;
-          document.querySelector('#play').textContent = 'Play';
+          document.querySelector('#play').textContent = L('Start','Play');
         }
 
         document.querySelector('#reset').onclick = () => {
@@ -1368,7 +1416,7 @@ const timingValues = [
 
         function applyAlignChange() {
           const measure = Number(align.value);
-          resetTransport(`Align = ${measure}/8 — fixed 16/8 view. Row 3 step lengths are unchanged; only Align boundaries move unless a step uses ALIGN.`);
+          resetTransport(L(`Align = ${measure}/8 — feste 16/8-Ansicht. Die Schrittlängen der Reihe 3 bleiben unverändert; nur die Align-Grenzen verschieben sich, außer ein Schritt steht auf ALIGN.`, `Align = ${measure}/8 — fixed 16/8 view. Row 3 step lengths are unchanged; only Align boundaries move unless a step uses ALIGN.`));
           redraw();
         }
 
@@ -1438,151 +1486,6 @@ const timingValues = [
         });
 
 
-
-        }
-
-        function refreshChordProgramState() {
-          chordProgram.classList.toggle('active', chordProgramMode);
-          chordProgram.textContent = chordProgramMode ? 'SCALE → PROGRAM ✓' : 'SCALE → PROGRAM';
-          const writable = chordTransportStopped && chordProgramMode;
-
-          midiKeys.forEach(key => key.disabled = !writable);
-          if (!writable) heldOrder = [];
-
-          if (!chordTransportStopped) {
-            programInstruction.textContent = 'RUNNING — PROGRAM cannot be selected. Stop the SAM first.';
-          } else if (!chordProgramMode) {
-            programInstruction.textContent = 'STOPPED — now move the Scale switch to PROGRAM.';
-          } else {
-            programInstruction.textContent = 'PROGRAM active — Step 1 Pitch selects the memory position. Select up to seven MIDI notes, then release/store them.';
-          }
-          programInstruction.classList.toggle('locked', !writable);
-          refreshHeldNotes();
-        }
-
-        function setPitchSlot(index) {
-          selectedPitchSlot = Math.max(0, Math.min(11, index));
-          const angle = -150 + selectedPitchSlot * (300 / 11);
-          pitchProgramKnob.querySelector('.pitch-program-knob').style.setProperty('--slot-angle', angle + 'deg');
-          pitchProgramKnob.setAttribute('aria-valuenow', String(selectedPitchSlot + 1));
-          pitchSlotReadout.textContent = String(selectedPitchSlot + 1) + ' / 12';
-          pitchSlotButtons.forEach((button,i) => button.classList.toggle('active', i === selectedPitchSlot));
-          refreshStoredSlot();
-        }
-
-        function refreshStoredSlot() {
-          const slot = chordSlots[selectedPitchSlot];
-          pitchSlotStored.textContent = slot.notes.length ? chordText(slot.notes) + ' · root ' + slot.root : 'empty';
-
-          pitchSlotButtons.forEach((button,i) => {
-            button.classList.toggle('has-chord', chordSlots[i].notes.length > 0);
-            button.title = chordSlots[i].notes.length
-              ? 'Position ' + (i+1) + ': ' + chordText(chordSlots[i].notes) + ' · root ' + chordSlots[i].root
-              : 'Position ' + (i+1) + ': empty';
-          });
-
-          baseChordOutput.textContent = chordText(slot.notes);
-          pitchCvOutput.textContent = slot.root || '—';
-          adjacentOutput.textContent = slot.root || '—';
-
-          if (slot.notes.length) {
-            rootExplainer.innerHTML = 'Stored position <strong>' + (selectedPitchSlot + 1) + '</strong>: full chord <strong>' + chordText(slot.notes) + '</strong>; first-entered/root note <strong>' + slot.root + '</strong>.';
-          } else {
-            rootExplainer.textContent = 'This position is empty. Enter PROGRAM, select notes, then use “Release keys → Store”.';
-          }
-        }
-
-        function refreshHeldNotes() {
-          midiKeys.forEach(key => {
-            const note = key.dataset.note;
-            key.classList.toggle('held', heldOrder.includes(note));
-            key.classList.toggle('root-key', heldOrder[0] === note);
-          });
-
-          if (!heldOrder.length) {
-            heldNotesEl.innerHTML = '<span>No MIDI notes held.</span>';
-          } else {
-            heldNotesEl.innerHTML = heldOrder.map((note,i) => '<span class="note-chip ' + (i===0 ? 'root' : '') + '">' + note + (i===0 ? ' · 1st/root' : '') + '</span>').join('');
-          }
-
-          const writable = chordTransportStopped && chordProgramMode;
-          storeChordBtn.disabled = !writable || heldOrder.length === 0;
-          clearHeldBtn.disabled = !writable || heldOrder.length === 0;
-        }
-
-        chordStop.addEventListener('click', () => setChordTransport(true));
-        chordRun.addEventListener('click', () => setChordTransport(false));
-
-        chordProgram.addEventListener('click', () => {
-          if (!chordTransportStopped) {
-            refreshChordProgramState();
-            return;
-          }
-          chordProgramMode = !chordProgramMode;
-          refreshChordProgramState();
-        });
-
-        pitchSlotButtons.forEach((button,i) => button.addEventListener('click', () => setPitchSlot(i)));
-
-        pitchProgramKnob.addEventListener('wheel', event => {
-          event.preventDefault();
-          setPitchSlot(selectedPitchSlot + (event.deltaY < 0 ? 1 : -1));
-        }, {passive:false});
-
-        pitchProgramKnob.addEventListener('keydown', event => {
-          if (event.key === 'ArrowUp' || event.key === 'ArrowRight') {
-            event.preventDefault();
-            setPitchSlot(selectedPitchSlot + 1);
-          } else if (event.key === 'ArrowDown' || event.key === 'ArrowLeft') {
-            event.preventDefault();
-            setPitchSlot(selectedPitchSlot - 1);
-          } else if (event.key === 'Home') {
-            event.preventDefault();
-            setPitchSlot(0);
-          } else if (event.key === 'End') {
-            event.preventDefault();
-            setPitchSlot(11);
-          }
-        });
-
-        midiKeys.forEach(key => {
-          key.addEventListener('click', () => {
-            if (!chordTransportStopped || !chordProgramMode) return;
-            const note = key.dataset.note;
-            const existing = heldOrder.indexOf(note);
-            if (existing >= 0) {
-              heldOrder.splice(existing, 1);
-            } else if (heldOrder.length < 7) {
-              heldOrder.push(note);
-            }
-            refreshHeldNotes();
-          });
-        });
-
-        clearHeldBtn.addEventListener('click', () => {
-          heldOrder = [];
-          refreshHeldNotes();
-        });
-
-        storeChordBtn.addEventListener('click', () => {
-          if (!heldOrder.length || !chordTransportStopped || !chordProgramMode) return;
-
-          const root = heldOrder[0];
-          const notes = chordSort(heldOrder);
-          chordSlots[selectedPitchSlot] = {notes:notes, root:root};
-
-          const storedChord = chordText(notes);
-          heldOrder = [];
-          refreshHeldNotes();
-          refreshStoredSlot();
-          rootExplainer.innerHTML = 'Released/stored: <strong>' + storedChord + '</strong>. Because <strong>' + root + '</strong> was entered first, the monophonic/root output is <strong>' + root + '</strong>.';
-        });
-
-        setPitchSlot(0);
-        refreshChordProgramState();
-
-
-
         // Option A / alternating mode
         const altCount = document.querySelector('#altCount');
         const altPlay = document.querySelector('#altPlay');
@@ -1629,14 +1532,14 @@ const timingValues = [
         function renderAltOrderSummary() {
           const info = altModeInfo();
           if (info.mode === 'off') {
-            altOrderTitle.textContent = 'Shifted start';
+            altOrderTitle.textContent = L('Verschobener Start','Shifted start');
             altOrderText.textContent = '9 → 10 → … → 16 → 1 → … → 8';
           } else if (info.n === 1) {
-            altOrderTitle.textContent = altShifted ? 'Current run: +8 shifted start' : 'Current run: normal start';
+            altOrderTitle.textContent = altShifted ? L('Aktueller Durchlauf: um +8 verschoben','Current run: +8 shifted start') : L('Aktueller Durchlauf: normaler Start','Current run: normal start');
             altOrderText.textContent = altShifted ? '9 → … → 16 → 1 → … → 8' : '1 → 2 → … → 16';
           } else {
-            altOrderTitle.textContent = 'Shift after ' + info.n + ' runs';
-            altOrderText.textContent = 'normal start → … → +8 shifted start';
+            altOrderTitle.textContent = L('Verschiebung nach ' + info.n + ' Durchläufen','Shift after ' + info.n + ' runs');
+            altOrderText.textContent = L('normaler Start → … → um +8 verschobener Start','normal start → … → +8 shifted start');
           }
         }
 
@@ -1646,7 +1549,7 @@ const timingValues = [
           if (info.mode === 'off') {
             const b = document.createElement('span');
             b.className = 'alt-run-badge current';
-            b.textContent = 'always +8 shifted';
+            b.textContent = L('immer um +8 verschoben','always +8 shifted');
             altRunBadges.appendChild(b);
             return;
           }
@@ -1654,23 +1557,25 @@ const timingValues = [
           for (let i=1;i<=total;i++) {
             const b = document.createElement('span');
             b.className = 'alt-run-badge' + (i === altRun && !altShifted ? ' current' : '');
-            b.textContent = 'run ' + i;
+            b.textContent = L('Durchlauf ','run ') + i;
             altRunBadges.appendChild(b);
           }
           const shift = document.createElement('span');
           shift.className = 'alt-run-badge' + (altShifted ? ' current' : '');
-          shift.textContent = '+8 shifted start';
+          shift.textContent = L('+8 verschobener Start','+8 shifted start');
           altRunBadges.appendChild(shift);
         }
 
         function describeAlt() {
           const info = altModeInfo();
           if (info.mode === 'off') {
-            altStatus.textContent = 'Option A = off — every run uses the +8 shifted start: 9 → … → 16 → 1 → … → 8.';
+            altStatus.textContent = L('Option A = off — jeder Durchlauf verwendet den um +8 verschobenen Start: 9 → … → 16 → 1 → … → 8.','Option A = off — every run uses the +8 shifted start: 9 → … → 16 → 1 → … → 8.');
           } else if (info.n === 1) {
-            altStatus.textContent = 'Option A = 1 — start position alternates every run: normal start, then +8 shifted start.';
+            altStatus.textContent = L('Option A = 1 — die Startposition wechselt nach jedem Durchlauf: normaler Start, dann um +8 verschobener Start.','Option A = 1 — start position alternates every run: normal start, then +8 shifted start.');
           } else {
-            altStatus.textContent = 'Option A = ' + info.n + ' — after ' + info.n + ' runs, the start position shifts by +8. The exact repeating cycle after that shift is not asserted until hardware verification.';
+            altStatus.textContent = currentLang === 'de'
+              ? 'Option A = ' + info.n + ' — nach ' + info.n + ' Durchläufen wird die Startposition um +8 verschoben. Der genaue Wiederholungszyklus danach wird erst nach Hardware-Prüfung festgelegt.'
+              : 'Option A = ' + info.n + ' — after ' + info.n + ' runs, the start position shifts by +8. The exact repeating cycle after that shift is not asserted until hardware verification.';
           }
           renderAltBadges();
           renderAltOrderSummary();
@@ -1679,7 +1584,7 @@ const timingValues = [
         function resetAlt() {
           altRunning = false;
           clearTimeout(altTimer);
-          altPlay.textContent = 'Play';
+          altPlay.textContent = L('Start','Play');
           altRun = 1;
           altPos = 0;
           altShifted = altCount.value === 'off';
@@ -1701,9 +1606,9 @@ const timingValues = [
           if (els[altPos]) els[altPos].classList.add('active');
 
           altStatus.textContent =
-            (altShifted ? '+8 shifted' : 'normal') +
-            ' run · Step ' + order[altPos] +
-            ' · position ' + (altPos + 1) + '/16';
+            (altShifted ? L('+8 verschoben','+8 shifted') : L('normal','normal')) +
+            L(' · Durchlauf · Schritt ',' run · Step ') + order[altPos] +
+            L(' · Position ',' · position ') + (altPos + 1) + '/16';
 
           altTimer = setTimeout(() => {
             altPos++;
@@ -1724,11 +1629,13 @@ const timingValues = [
                 }
               } else {
                 altRunning = false;
-                altPlay.textContent = 'Play';
+                altPlay.textContent = L('Start','Play');
                 clearAltPath();
                 altShiftedRow.classList.add('active-run');
                 altShiftedSteps[0].classList.add('start');
-                altStatus.textContent = 'Documented point reached: after ' + info.n + ' run' + (info.n === 1 ? '' : 's') + ', the start shifts by +8 to Step 9. Simulation stops here because the following 2–15 repeat cycle still needs hardware verification.';
+                altStatus.textContent = currentLang === 'de'
+                  ? 'Dokumentierter Punkt erreicht: Nach ' + info.n + ' Durchläufen verschiebt sich der Start um +8 auf Schritt 9. Die Simulation stoppt hier, weil der anschließende Wiederholungszyklus für 2–15 noch an der Hardware geprüft werden muss.'
+                  : 'Documented point reached: after ' + info.n + ' run' + (info.n === 1 ? '' : 's') + ', the start shifts by +8 to Step 9. Simulation stops here because the following 2–15 repeat cycle still needs hardware verification.';
                 renderAltBadges();
                 renderAltOrderSummary();
                 return;
@@ -1742,7 +1649,7 @@ const timingValues = [
 
         altPlay.addEventListener('click', () => {
           altRunning = !altRunning;
-          altPlay.textContent = altRunning ? 'Pause' : 'Play';
+          altPlay.textContent = altRunning ? 'Pause' : L('Start','Play');
           if (altRunning) advanceAlt();
           else clearTimeout(altTimer);
         });
@@ -1750,6 +1657,7 @@ const timingValues = [
         altCount.addEventListener('change', resetAlt);
 
         resetAlt();
+        setLanguage('de');
 
         let resizeTimer;
         window.addEventListener('resize', () => {
