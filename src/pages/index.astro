@@ -660,6 +660,38 @@ const timingValues = [
         .hw-root-arrow { transform:rotate(90deg); justify-self:center; }
       }
 
+
+      /* Option A / alternating mode */
+      .alt-shell{margin-top:22px;border:1px solid #cbc8bd;border-radius:10px;overflow:hidden;background:#fbfaf6}
+      .alt-toolbar{display:flex;justify-content:space-between;gap:18px;align-items:flex-end;flex-wrap:wrap;padding:14px;border-bottom:1px solid #d8d5ca}
+      .alt-controls{display:flex;gap:18px;align-items:flex-end;flex-wrap:wrap}
+      .alt-control label{font-size:10px;font-weight:900;letter-spacing:.07em;text-transform:uppercase;color:#5b574e}
+      .alt-control select{min-width:110px}
+      .alt-hardware{display:flex;align-items:center;gap:10px}
+      .alt-switch{width:44px;height:72px;position:relative}
+      .alt-switch::before{content:'';position:absolute;left:20px;top:8px;width:4px;height:56px;border-radius:4px;background:#d3d0c7}
+      .alt-switch .pos{position:absolute;left:15px;width:14px;height:14px;border:2px solid #858175;border-radius:50%;background:#fbfaf6}
+      .alt-switch .pos.a{top:4px}.alt-switch .pos.b{bottom:4px}
+      .alt-switch .pos.active{background:#171717;border-color:#171717}
+      .alt-switch .lever{position:absolute;left:20px;top:10px;width:4px;height:39px;border-radius:3px;background:#171717;transform-origin:2px 32px;transform:rotate(20deg)}
+      .alt-switch-labels{display:grid;gap:14px;font-size:10px;font-weight:900}
+      .alt-steps{display:grid;grid-template-columns:repeat(16,minmax(42px,1fr));gap:4px;padding:18px 14px 10px}
+      .alt-step{height:54px;border:1px solid #aaa69a;background:#f1efe7;display:grid;place-items:center;font-size:11px;font-weight:900;position:relative;transition:transform .12s ease,background .12s ease,border-color .12s ease}
+      .alt-step.half-b{background:#e4e1d7}
+      .alt-step.active{transform:translateY(-3px);border:2px solid #171717;background:#fff}
+      .alt-step.start::before{content:'START';position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:8px;background:#171717;color:#fff;padding:2px 4px}
+      .alt-half-labels{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:0 14px 14px}
+      .alt-half-label{padding:7px 10px;text-align:center;font-size:10px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;border-top:3px solid #171717}
+      .alt-half-label:last-child{border-top-style:double}
+      .alt-status{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;padding:13px 14px;border-top:1px solid #d8d5ca}
+      .alt-status-main{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.5}
+      .alt-run-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+      .alt-run-badge{padding:4px 6px;border:1px solid #aaa69a;background:#fff;font-size:10px;font-weight:800}
+      .alt-run-badge.current{background:#171717;color:#fff;border-color:#171717}
+      .alt-note{padding:10px 14px;background:#f7f6f1;border-top:1px solid #e2dfd5;font-size:12px;line-height:1.5;color:#57534b}
+      .alt-verify{display:inline-block;margin-left:6px;padding:2px 5px;border:1px solid #9d7820;background:#fff8dc;font-size:9px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;color:#6f5517}
+      @media(max-width:800px){.alt-steps{grid-template-columns:repeat(8,minmax(38px,1fr))}.alt-half-labels{grid-template-columns:1fr}.alt-status{grid-template-columns:1fr}.alt-status button{justify-self:start}}
+
       @media (max-width:800px) {
         main { padding:24px 12px 60px; }
         .card { padding:18px; }
@@ -858,6 +890,72 @@ const timingValues = [
         </div>
       </section>
 
+
+
+      <section class="card" id="optionA">
+        <h2>Option A — Alternating Mode</h2>
+        <p class="note">
+          Option A shifts the sequence start by <strong>8 steps</strong>, so the same 16-step panel can be treated as two related halves:
+          <strong>Steps 1–8</strong> and <strong>Steps 9–16</strong>. The original manual confirms that <strong>off</strong> always starts at Step 9,
+          while encoder values <strong>1–15</strong> determine after how many runs the 8-step start shift occurs.
+        </p>
+
+        <div class="alt-shell">
+          <div class="alt-toolbar">
+            <div class="alt-controls">
+              <div class="alt-control">
+                <label>OPTION switch</label>
+                <div class="alt-hardware">
+                  <div class="alt-switch" aria-label="Option switch in A position">
+                    <i class="pos a active"></i>
+                    <i class="pos b"></i>
+                    <i class="lever"></i>
+                  </div>
+                  <div class="alt-switch-labels"><span>A — alternating</span><span>B — normal</span></div>
+                </div>
+              </div>
+              <div class="alt-control">
+                <label for="altCount">ENCODER WITH OPTION A</label>
+                <select id="altCount">
+                  <option value="off">off</option>
+                  <option value="1" selected>1</option><option value="2" >2</option><option value="3" >3</option><option value="4" >4</option><option value="5" >5</option><option value="6" >6</option><option value="7" >7</option><option value="8" >8</option><option value="9" >9</option><option value="10" >10</option><option value="11" >11</option><option value="12" >12</option><option value="13" >13</option><option value="14" >14</option><option value="15" >15</option>
+                </select>
+              </div>
+              <div class="alt-control">
+                <label for="altAlign">GLOBAL ALIGN / Taktlänge</label>
+                <select id="altAlign">
+                  <option value="1" >1/8</option><option value="2" >2/8</option><option value="3" >3/8</option><option value="4" >4/8</option><option value="5" >5/8</option><option value="6" >6/8</option><option value="7" >7/8</option><option value="8" selected>8/8</option><option value="9" >9/8</option><option value="10" >10/8</option><option value="11" >11/8</option><option value="12" >12/8</option><option value="13" >13/8</option><option value="14" >14/8</option><option value="15" >15/8</option><option value="16" >16/8</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <button id="altPlay">Play</button>
+              <button id="altReset">Reset</button>
+            </div>
+          </div>
+
+          <div class="alt-steps" id="altSteps">
+            <div class="alt-step " data-alt-step="0">1</div><div class="alt-step " data-alt-step="1">2</div><div class="alt-step " data-alt-step="2">3</div><div class="alt-step " data-alt-step="3">4</div><div class="alt-step " data-alt-step="4">5</div><div class="alt-step " data-alt-step="5">6</div><div class="alt-step " data-alt-step="6">7</div><div class="alt-step " data-alt-step="7">8</div><div class="alt-step half-b" data-alt-step="8">9</div><div class="alt-step half-b" data-alt-step="9">10</div><div class="alt-step half-b" data-alt-step="10">11</div><div class="alt-step half-b" data-alt-step="11">12</div><div class="alt-step half-b" data-alt-step="12">13</div><div class="alt-step half-b" data-alt-step="13">14</div><div class="alt-step half-b" data-alt-step="14">15</div><div class="alt-step half-b" data-alt-step="15">16</div>
+          </div>
+          <div class="alt-half-labels">
+            <div class="alt-half-label">Half A · Steps 1–8</div>
+            <div class="alt-half-label">Half B · Steps 9–16</div>
+          </div>
+
+          <div class="alt-status">
+            <div>
+              <div class="alt-status-main" id="altStatus">Ready — Option A = 1: start shift every run.</div>
+              <div class="alt-run-badges" id="altRunBadges"></div>
+            </div>
+            <div id="altHalfLength"><strong>Align 8/8</strong><br><small>alternating half length = 4/8 = 8/16</small></div>
+          </div>
+
+          <div class="alt-note" id="altNote">
+            <strong>Verified core:</strong> A activates alternating mode; B returns to normal; the start is shifted by 8 steps; <strong>off</strong> always starts at Step 9; value <strong>1</strong> is documented as a change every run.
+            <span class="alt-verify">hardware-check for 2–15 repeat pattern</span>
+          </div>
+        </div>
+      </section>
 
       <script is:inline>
         const eighthMs = 240;
@@ -1388,6 +1486,150 @@ const timingValues = [
         setPitchSlot(0);
         refreshChordProgramState();
 
+
+
+        // Option A / alternating mode
+        const altCount = document.querySelector('#altCount');
+        const altAlign = document.querySelector('#altAlign');
+        const altPlay = document.querySelector('#altPlay');
+        const altReset = document.querySelector('#altReset');
+        const altStatus = document.querySelector('#altStatus');
+        const altRunBadges = document.querySelector('#altRunBadges');
+        const altHalfLength = document.querySelector('#altHalfLength');
+        const altSteps = [...document.querySelectorAll('[data-alt-step]')];
+
+        let altRunning = false;
+        let altTimer = null;
+        let altStep = 0;
+        let altRun = 1;
+        let altShifted = false;
+
+        function altModeInfo() {
+          const value = altCount.value;
+          if (value === 'off') return {verified:true, mode:'off', n:0};
+          const n = Number(value);
+          return {verified:n === 1, mode:'count', n:n};
+        }
+
+        function updateAltHalfLength() {
+          const a = Number(altAlign.value);
+          altHalfLength.innerHTML = '<strong>Align ' + a + '/8</strong><br><small>alternating half length = ' + a + '/16 (' + (a/2) + '/8)</small>';
+        }
+
+        function clearAltSteps() {
+          altSteps.forEach(s => s.classList.remove('active','start'));
+        }
+
+        function altStartIndex() {
+          const info = altModeInfo();
+          if (info.mode === 'off') return 8;
+          return altShifted ? 8 : 0;
+        }
+
+        function renderAltBadges() {
+          const info = altModeInfo();
+          altRunBadges.innerHTML = '';
+          if (info.mode === 'off') {
+            const b = document.createElement('span');
+            b.className = 'alt-run-badge current';
+            b.textContent = 'always start Step 9';
+            altRunBadges.appendChild(b);
+            return;
+          }
+          const count = Math.max(1, info.n);
+          for (let i=1;i<=Math.min(count,15);i++) {
+            const b = document.createElement('span');
+            b.className = 'alt-run-badge' + (i === altRun ? ' current' : '');
+            b.textContent = 'run ' + i;
+            altRunBadges.appendChild(b);
+          }
+          if (!info.verified && info.n > 1) {
+            const b = document.createElement('span');
+            b.className = 'alt-run-badge';
+            b.textContent = '→ +8 start shift (exact repeat cycle TBD)';
+            altRunBadges.appendChild(b);
+          }
+        }
+
+        function describeAlt() {
+          const info = altModeInfo();
+          if (info.mode === 'off') {
+            altStatus.textContent = 'Option A = off — documented special case: every run starts at Step 9.';
+          } else if (info.n === 1) {
+            altStatus.textContent = 'Option A = 1 — documented example: start point alternates every run (Step 1 ↔ Step 9).';
+          } else {
+            altStatus.textContent = 'Option A = ' + info.n + ' — documented: the +8 start shift occurs after ' + info.n + ' runs. Exact repeating cycle for 2–15 is intentionally not asserted until hardware verification.';
+          }
+          renderAltBadges();
+          updateAltHalfLength();
+        }
+
+        function resetAlt() {
+          altRunning = false;
+          clearTimeout(altTimer);
+          altPlay.textContent = 'Play';
+          altRun = 1;
+          altShifted = altCount.value === 'off';
+          altStep = altStartIndex();
+          clearAltSteps();
+          const start = altSteps[altStep];
+          if (start) start.classList.add('start');
+          describeAlt();
+        }
+
+        function advanceAlt() {
+          if (!altRunning) return;
+          clearAltSteps();
+          const start = altStartIndex();
+          const local = altStep - start;
+          if (local === 0 && altSteps[altStep]) altSteps[altStep].classList.add('start');
+          if (altSteps[altStep]) altSteps[altStep].classList.add('active');
+
+          const info = altModeInfo();
+          altStatus.textContent = 'Run ' + altRun + ' · ' + (start === 0 ? 'Steps 1–8' : 'Steps 9–16') + ' · Step ' + (altStep + 1);
+
+          altTimer = setTimeout(() => {
+            altStep++;
+            const end = start + 8;
+            if (altStep >= end) {
+              if (info.mode === 'off') {
+                altStep = 8;
+              } else if (info.n === 1) {
+                altShifted = !altShifted;
+                altRun = 1;
+                altStep = altStartIndex();
+              } else {
+                altRun++;
+                if (altRun > info.n) {
+                  altRunning = false;
+                  altPlay.textContent = 'Play';
+                  clearAltSteps();
+                  altShifted = true;
+                  altStep = 8;
+                  altSteps[8].classList.add('start');
+                  altStatus.textContent = 'After ' + info.n + ' runs: documented +8 start shift → Step 9. Playback stops here because the exact subsequent 2–15 repeat cycle still needs hardware verification.';
+                  renderAltBadges();
+                  return;
+                }
+                altStep = start;
+              }
+              renderAltBadges();
+            }
+            advanceAlt();
+          }, 190);
+        }
+
+        altPlay.addEventListener('click', () => {
+          altRunning = !altRunning;
+          altPlay.textContent = altRunning ? 'Pause' : 'Play';
+          if (altRunning) advanceAlt();
+          else clearTimeout(altTimer);
+        });
+        altReset.addEventListener('click', resetAlt);
+        altCount.addEventListener('change', resetAlt);
+        altAlign.addEventListener('change', () => { updateAltHalfLength(); describeAlt(); });
+
+        resetAlt();
 
         let resizeTimer;
         window.addEventListener('resize', () => {
