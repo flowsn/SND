@@ -360,6 +360,39 @@ const timingValues = [
         font-size:12px;
         color:#555;
       }
+
+      /* Chord programming */
+      .chord-workflow{display:grid;grid-template-columns:minmax(260px,.72fr) minmax(420px,1.5fr);gap:22px;margin-top:22px}
+      .chord-panel{border:1px solid #cbc8bd;border-radius:10px;background:#fbfaf6;padding:18px}
+      .chord-panel h3{margin:0 0 14px;font-size:14px;letter-spacing:.02em}
+      .hardware-state{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+      .state-pill{display:inline-flex;align-items:center;min-height:34px;padding:7px 10px;border:1px solid #aaa69a;background:#f3f1ea;font-size:12px;font-weight:800}
+      .state-pill.active{background:#171717;color:#fff;border-color:#171717}
+      .pitch-slot-control{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:18px;margin-top:16px}
+      .pitch-program-knob-shell{width:86px;height:86px;position:relative;border-radius:50%;outline:none;cursor:ns-resize;touch-action:none}
+      .pitch-program-knob-shell:focus-visible{box-shadow:0 0 0 3px rgba(23,23,23,.22)}
+      .pitch-program-knob{width:60px;height:60px;position:absolute;left:13px;top:13px;border:2px solid #222;border-radius:50%;background:#ebe9e2;box-shadow:inset 0 0 0 2px #f7f6f1}
+      .pitch-program-knob::after{content:'';position:absolute;width:2px;height:21px;left:27px;top:5px;background:#222;transform-origin:1px 25px;transform:rotate(var(--slot-angle))}
+      .pitch-slot-dot{position:absolute;width:4px;height:4px;border-radius:50%;background:#777;left:41px;top:2px;transform-origin:2px 41px;transform:rotate(var(--slot-dot-angle))}
+      .slot-readout{font-size:13px;line-height:1.45}.slot-readout strong{display:block;font-size:23px;line-height:1.1}
+      .slot-bank{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:15px}
+      .slot-button{min-width:0;padding:7px 4px;font-size:11px;font-weight:800}.slot-button.active{background:#171717;color:#fff;border-color:#171717}.slot-button.has-chord::after{content:' •'}
+      .program-instruction{margin-top:14px;padding:10px 12px;border-left:3px solid #171717;background:#f1efe7;font-size:13px;line-height:1.45}.program-instruction.locked{border-left-color:#999;color:#666}
+      .midi-note-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:5px;margin-top:14px}
+      .midi-note{min-width:0;padding:18px 2px;font-size:11px;font-weight:800;position:relative}
+      .midi-note.black-note{background:#292929;color:#fff}.midi-note.held{box-shadow:inset 0 0 0 3px #c33422}.midi-note.root-key::after{content:'1st';position:absolute;top:2px;right:2px;font-size:8px;background:#c33422;color:#fff;padding:2px 3px}
+      .midi-note:disabled{opacity:.42;cursor:not-allowed}
+      .held-notes{display:flex;gap:8px;align-items:center;flex-wrap:wrap;min-height:36px;margin-top:10px;font-size:12px}
+      .note-chip{display:inline-flex;gap:5px;align-items:center;border:1px solid #aaa69a;background:#f3f1ea;padding:5px 7px;border-radius:4px;font-weight:800}.note-chip.root{border-color:#c33422}
+      .store-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}.store-row button:disabled{opacity:.45;cursor:not-allowed}
+      .output-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
+      .output-box{border:1px solid #cbc8bd;background:#fff;border-radius:8px;padding:12px;min-height:96px}
+      .output-label{font-size:10px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:#5d594f}
+      .output-value{margin-top:9px;font-size:18px;font-weight:800;min-height:24px}
+      .output-box small{display:block;margin-top:6px;color:#666;line-height:1.35}
+      .root-explainer{margin-top:14px;font-size:12px;line-height:1.5;color:#555}
+      @media (max-width:900px){.chord-workflow{grid-template-columns:1fr}.output-grid{grid-template-columns:1fr}}
+
       @media (max-width:800px) {
         main { padding:24px 12px 60px; }
         .card { padding:18px; }
@@ -453,6 +486,97 @@ const timingValues = [
           Drag a Row 3 knob up or down to move through its detents. The upper lane shows the SAM timing; the straight 16th grid underneath stays fixed. The display always covers 16/8. Changing Global Align moves only the measure boundaries unless a step is actually set to ALIGN.
         </p>
       </section>
+
+
+      <section class="card" id="chordProgramming">
+        <h2>Chord Programming + Root Note</h2>
+        <p class="note">
+          In <strong>PROGRAM</strong>, the <strong>Step 1 Pitch selector</strong> chooses one of 12 programmable note/chord positions.
+          Play up to seven MIDI notes; releasing the keys stores them. The <strong>first note entered</strong> becomes the monophonic Pitch-CV note and,
+          in Dual/X-fade modes, the note sent on the adjacent MIDI channel.
+        </p>
+
+        <div class="chord-workflow">
+          <div class="chord-panel">
+            <h3>1 — Hardware state + memory position</h3>
+            <div class="hardware-state">
+              <button id="chordStop" class="state-pill active">STOPPED</button>
+              <button id="chordRun" class="state-pill">RUN</button>
+              <button id="chordProgram" class="state-pill">SCALE → PROGRAM</button>
+            </div>
+
+            <div class="hardware-caption">STEP 1 — PITCH SELECTOR</div>
+            <div class="pitch-slot-control">
+              <div class="pitch-program-knob-shell" id="pitchProgramKnob" role="slider" tabindex="0" aria-label="Step 1 Pitch selector" aria-valuemin="1" aria-valuemax="12" aria-valuenow="1">
+                <i class="pitch-slot-dot" style="--slot-dot-angle:-150deg"></i><i class="pitch-slot-dot" style="--slot-dot-angle:-123deg"></i>
+                <i class="pitch-slot-dot" style="--slot-dot-angle:-95deg"></i><i class="pitch-slot-dot" style="--slot-dot-angle:-68deg"></i>
+                <i class="pitch-slot-dot" style="--slot-dot-angle:-41deg"></i><i class="pitch-slot-dot" style="--slot-dot-angle:-14deg"></i>
+                <i class="pitch-slot-dot" style="--slot-dot-angle:14deg"></i><i class="pitch-slot-dot" style="--slot-dot-angle:41deg"></i>
+                <i class="pitch-slot-dot" style="--slot-dot-angle:68deg"></i><i class="pitch-slot-dot" style="--slot-dot-angle:95deg"></i>
+                <i class="pitch-slot-dot" style="--slot-dot-angle:123deg"></i><i class="pitch-slot-dot" style="--slot-dot-angle:150deg"></i>
+                <div class="pitch-program-knob" style="--slot-angle:-150deg"></div>
+              </div>
+              <div class="slot-readout">
+                <span>Selected programmable position</span>
+                <strong id="pitchSlotReadout">1 / 12</strong>
+                <span id="pitchSlotStored">empty</span>
+              </div>
+            </div>
+
+            <div class="slot-bank" id="pitchSlotBank">
+              <button class="slot-button active" data-slot="0">POS 1</button><button class="slot-button" data-slot="1">POS 2</button>
+              <button class="slot-button" data-slot="2">POS 3</button><button class="slot-button" data-slot="3">POS 4</button>
+              <button class="slot-button" data-slot="4">POS 5</button><button class="slot-button" data-slot="5">POS 6</button>
+              <button class="slot-button" data-slot="6">POS 7</button><button class="slot-button" data-slot="7">POS 8</button>
+              <button class="slot-button" data-slot="8">POS 9</button><button class="slot-button" data-slot="9">POS 10</button>
+              <button class="slot-button" data-slot="10">POS 11</button><button class="slot-button" data-slot="11">POS 12</button>
+            </div>
+
+            <div class="program-instruction locked" id="programInstruction">
+              STOP the SAM, then move the Scale switch to PROGRAM. Only then can the selected Pitch position be written.
+            </div>
+          </div>
+
+          <div class="chord-panel">
+            <h3>2 — Play the chord from MIDI In</h3>
+            <p class="microcopy" style="margin-top:0">
+              This one-octave keyboard is a teaching view. Select notes in the order you would hold them on a MIDI keyboard. The first selected note is marked <strong>1st</strong>.
+            </p>
+
+            <div class="midi-note-grid" id="midiKeyboard">
+              <button class="midi-note" data-note="C" disabled>C</button>
+              <button class="midi-note black-note" data-note="C♯" disabled>C♯</button>
+              <button class="midi-note" data-note="D" disabled>D</button>
+              <button class="midi-note black-note" data-note="D♯" disabled>D♯</button>
+              <button class="midi-note" data-note="E" disabled>E</button>
+              <button class="midi-note" data-note="F" disabled>F</button>
+              <button class="midi-note black-note" data-note="F♯" disabled>F♯</button>
+              <button class="midi-note" data-note="G" disabled>G</button>
+              <button class="midi-note black-note" data-note="G♯" disabled>G♯</button>
+              <button class="midi-note" data-note="A" disabled>A</button>
+              <button class="midi-note black-note" data-note="A♯" disabled>A♯</button>
+              <button class="midi-note" data-note="B" disabled>B</button>
+            </div>
+
+            <div class="held-notes" id="heldNotes"><span>No MIDI notes held.</span></div>
+            <div class="store-row">
+              <button id="storeChord" disabled>Release keys → Store</button>
+              <button id="clearHeld" disabled>Clear held notes</button>
+            </div>
+
+            <div class="output-grid">
+              <div class="output-box"><div class="output-label">MIDI base channel</div><div class="output-value" id="baseChordOutput">—</div><small>Full programmed note/chord.</small></div>
+              <div class="output-box"><div class="output-label">Pitch CV</div><div class="output-value" id="pitchCvOutput">—</div><small>Monophonic: first-entered note.</small></div>
+              <div class="output-box"><div class="output-label">Adjacent MIDI channel</div><div class="output-value" id="adjacentOutput">—</div><small>First-entered note in Dual / X-fade modes.</small></div>
+            </div>
+
+            <div class="root-explainer" id="rootExplainer">
+              Positions 1 and 2 start with the same C–E–G chord but different first-entered notes. Switch between them to see the SAM's root-note behavior.
+            </div>
+          </div>
+        </div>
+      </section>
+
 
       <script is:inline>
         const eighthMs = 240;
@@ -838,6 +962,192 @@ const timingValues = [
             setTimingIndex(step, currentIndex(step) + (event.deltaY < 0 ? 1 : -1));
           }, { passive:false });
         });
+
+
+        // Chord programming simulator
+        const chordStop = document.querySelector('#chordStop');
+        const chordRun = document.querySelector('#chordRun');
+        const chordProgram = document.querySelector('#chordProgram');
+        const programInstruction = document.querySelector('#programInstruction');
+        const pitchProgramKnob = document.querySelector('#pitchProgramKnob');
+        const pitchSlotReadout = document.querySelector('#pitchSlotReadout');
+        const pitchSlotStored = document.querySelector('#pitchSlotStored');
+        const pitchSlotButtons = [...document.querySelectorAll('.slot-button')];
+        const midiKeys = [...document.querySelectorAll('.midi-note')];
+        const heldNotesEl = document.querySelector('#heldNotes');
+        const storeChordBtn = document.querySelector('#storeChord');
+        const clearHeldBtn = document.querySelector('#clearHeld');
+        const baseChordOutput = document.querySelector('#baseChordOutput');
+        const pitchCvOutput = document.querySelector('#pitchCvOutput');
+        const adjacentOutput = document.querySelector('#adjacentOutput');
+        const rootExplainer = document.querySelector('#rootExplainer');
+
+        const pitchClassOrder = ['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'];
+        const chordSlots = Array.from({length:12}, () => ({notes:[], root:null}));
+        chordSlots[0] = {notes:['C','E','G'], root:'C'};
+        chordSlots[1] = {notes:['C','E','G'], root:'E'};
+
+        let chordTransportStopped = true;
+        let chordProgramMode = false;
+        let selectedPitchSlot = 0;
+        let heldOrder = [];
+
+        function chordSort(notes) {
+          return [...notes].sort((a,b) => pitchClassOrder.indexOf(a) - pitchClassOrder.indexOf(b));
+        }
+
+        function chordText(notes) {
+          return notes.length ? chordSort(notes).join(' · ') : '—';
+        }
+
+        function setChordTransport(stopped) {
+          chordTransportStopped = stopped;
+          chordStop.classList.toggle('active', stopped);
+          chordRun.classList.toggle('active', !stopped);
+          if (!stopped) chordProgramMode = false;
+          refreshChordProgramState();
+        }
+
+        function refreshChordProgramState() {
+          chordProgram.classList.toggle('active', chordProgramMode);
+          chordProgram.textContent = chordProgramMode ? 'SCALE → PROGRAM ✓' : 'SCALE → PROGRAM';
+          const writable = chordTransportStopped && chordProgramMode;
+
+          midiKeys.forEach(key => key.disabled = !writable);
+          if (!writable) heldOrder = [];
+
+          if (!chordTransportStopped) {
+            programInstruction.textContent = 'RUNNING — PROGRAM cannot be selected. Stop the SAM first.';
+          } else if (!chordProgramMode) {
+            programInstruction.textContent = 'STOPPED — now move the Scale switch to PROGRAM.';
+          } else {
+            programInstruction.textContent = 'PROGRAM active — Step 1 Pitch selects the memory position. Select up to seven MIDI notes, then release/store them.';
+          }
+          programInstruction.classList.toggle('locked', !writable);
+          refreshHeldNotes();
+        }
+
+        function setPitchSlot(index) {
+          selectedPitchSlot = Math.max(0, Math.min(11, index));
+          const angle = -150 + selectedPitchSlot * (300 / 11);
+          pitchProgramKnob.querySelector('.pitch-program-knob').style.setProperty('--slot-angle', angle + 'deg');
+          pitchProgramKnob.setAttribute('aria-valuenow', String(selectedPitchSlot + 1));
+          pitchSlotReadout.textContent = String(selectedPitchSlot + 1) + ' / 12';
+          pitchSlotButtons.forEach((button,i) => button.classList.toggle('active', i === selectedPitchSlot));
+          refreshStoredSlot();
+        }
+
+        function refreshStoredSlot() {
+          const slot = chordSlots[selectedPitchSlot];
+          pitchSlotStored.textContent = slot.notes.length ? chordText(slot.notes) + ' · root ' + slot.root : 'empty';
+
+          pitchSlotButtons.forEach((button,i) => {
+            button.classList.toggle('has-chord', chordSlots[i].notes.length > 0);
+            button.title = chordSlots[i].notes.length
+              ? 'Position ' + (i+1) + ': ' + chordText(chordSlots[i].notes) + ' · root ' + chordSlots[i].root
+              : 'Position ' + (i+1) + ': empty';
+          });
+
+          baseChordOutput.textContent = chordText(slot.notes);
+          pitchCvOutput.textContent = slot.root || '—';
+          adjacentOutput.textContent = slot.root || '—';
+
+          if (slot.notes.length) {
+            rootExplainer.innerHTML = 'Stored position <strong>' + (selectedPitchSlot + 1) + '</strong>: full chord <strong>' + chordText(slot.notes) + '</strong>; first-entered/root note <strong>' + slot.root + '</strong>.';
+          } else {
+            rootExplainer.textContent = 'This position is empty. Enter PROGRAM, select notes, then use “Release keys → Store”.';
+          }
+        }
+
+        function refreshHeldNotes() {
+          midiKeys.forEach(key => {
+            const note = key.dataset.note;
+            key.classList.toggle('held', heldOrder.includes(note));
+            key.classList.toggle('root-key', heldOrder[0] === note);
+          });
+
+          if (!heldOrder.length) {
+            heldNotesEl.innerHTML = '<span>No MIDI notes held.</span>';
+          } else {
+            heldNotesEl.innerHTML = heldOrder.map((note,i) => '<span class="note-chip ' + (i===0 ? 'root' : '') + '">' + note + (i===0 ? ' · 1st/root' : '') + '</span>').join('');
+          }
+
+          const writable = chordTransportStopped && chordProgramMode;
+          storeChordBtn.disabled = !writable || heldOrder.length === 0;
+          clearHeldBtn.disabled = !writable || heldOrder.length === 0;
+        }
+
+        chordStop.addEventListener('click', () => setChordTransport(true));
+        chordRun.addEventListener('click', () => setChordTransport(false));
+
+        chordProgram.addEventListener('click', () => {
+          if (!chordTransportStopped) {
+            refreshChordProgramState();
+            return;
+          }
+          chordProgramMode = !chordProgramMode;
+          refreshChordProgramState();
+        });
+
+        pitchSlotButtons.forEach((button,i) => button.addEventListener('click', () => setPitchSlot(i)));
+
+        pitchProgramKnob.addEventListener('wheel', event => {
+          event.preventDefault();
+          setPitchSlot(selectedPitchSlot + (event.deltaY < 0 ? 1 : -1));
+        }, {passive:false});
+
+        pitchProgramKnob.addEventListener('keydown', event => {
+          if (event.key === 'ArrowUp' || event.key === 'ArrowRight') {
+            event.preventDefault();
+            setPitchSlot(selectedPitchSlot + 1);
+          } else if (event.key === 'ArrowDown' || event.key === 'ArrowLeft') {
+            event.preventDefault();
+            setPitchSlot(selectedPitchSlot - 1);
+          } else if (event.key === 'Home') {
+            event.preventDefault();
+            setPitchSlot(0);
+          } else if (event.key === 'End') {
+            event.preventDefault();
+            setPitchSlot(11);
+          }
+        });
+
+        midiKeys.forEach(key => {
+          key.addEventListener('click', () => {
+            if (!chordTransportStopped || !chordProgramMode) return;
+            const note = key.dataset.note;
+            const existing = heldOrder.indexOf(note);
+            if (existing >= 0) {
+              heldOrder.splice(existing, 1);
+            } else if (heldOrder.length < 7) {
+              heldOrder.push(note);
+            }
+            refreshHeldNotes();
+          });
+        });
+
+        clearHeldBtn.addEventListener('click', () => {
+          heldOrder = [];
+          refreshHeldNotes();
+        });
+
+        storeChordBtn.addEventListener('click', () => {
+          if (!heldOrder.length || !chordTransportStopped || !chordProgramMode) return;
+
+          const root = heldOrder[0];
+          const notes = chordSort(heldOrder);
+          chordSlots[selectedPitchSlot] = {notes:notes, root:root};
+
+          const storedChord = chordText(notes);
+          heldOrder = [];
+          refreshHeldNotes();
+          refreshStoredSlot();
+          rootExplainer.innerHTML = 'Released/stored: <strong>' + storedChord + '</strong>. Because <strong>' + root + '</strong> was entered first, the monophonic/root output is <strong>' + root + '</strong>.';
+        });
+
+        setPitchSlot(0);
+        refreshChordProgramState();
+
 
         let resizeTimer;
         window.addEventListener('resize', () => {
