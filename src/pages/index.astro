@@ -15,7 +15,7 @@ const timingValues = [
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <title>SND SAM-16 Online Manual</title>
-    <style>
+    <style is:global>
       :root {
         font-family: Inter, system-ui, sans-serif;
         color: #171717;
@@ -112,7 +112,7 @@ const timingValues = [
         height:46px;
         position:absolute;
         left:6px;
-        top:6px;
+        top:5px;
         border:2px solid #222;
         border-radius:50%;
         background:#ebe9e2;
@@ -209,14 +209,14 @@ const timingValues = [
       }
       .timeline-stage {
         position:relative;
-        min-height:154px;
-        width:1536px;
+        min-height:118px;
+        width:100%;
       }
       .ruler {
         position:absolute;
         left:0;
         top:0;
-        height:48px;
+        height:38px;
         width:100%;
       }
       .bar-line {
@@ -228,8 +228,8 @@ const timingValues = [
       }
       .eighth-line {
         position:absolute;
-        top:25px;
-        height:18px;
+        top:22px;
+        height:13px;
         border-left:1px solid #d1cec3;
         z-index:0;
       }
@@ -244,14 +244,14 @@ const timingValues = [
       .sequence-track {
         position:absolute;
         left:0;
-        top:52px;
-        height:70px;
+        top:40px;
+        height:62px;
         width:100%;
       }
       .segment {
         position:absolute;
-        top:8px;
-        height:50px;
+        top:6px;
+        height:44px;
         min-width:3px;
         border:1px solid #858175;
         background:#e7e4da;
@@ -370,18 +370,18 @@ const timingValues = [
         </div>
 
         <div class="explain-strip">
-          <span><strong>What the graphic means:</strong></span>
-          <span class="legend-chip"><span class="legend-swatch"></span> normal step duration</span>
-          <span class="legend-chip"><span class="legend-swatch align"></span> ALIGN hold until measure boundary</span>
+          <span><strong>Timeline:</strong></span>
+          <span class="legend-chip"><span class="legend-swatch"></span> each numbered block = one SAM step</span>
+          <span class="legend-chip"><span class="legend-swatch align"></span> ALIGN = wait to the next measure boundary</span>
         </div>
 
         <div class="timeline-shell">
           <div class="timeline-toolbar">
-            <strong>MASTER MEASURE vs. SAM STEP TIMING</strong>
+            <strong>WHAT THE SAM IS DOING OVER TIME</strong>
             <span id="measureInfo">Align = 8/8</span>
           </div>
           <div class="timeline-scroll" id="timelineScroll">
-            <div class="timeline-stage" id="timelineStage">
+            <div class="timeline-stage" id="timelineStage" aria-label="SAM step timing over two Align measures">
               <div class="ruler" id="ruler"></div>
               <div class="sequence-track" id="sequenceTrack"></div>
               <div class="playhead" id="playhead"></div>
@@ -396,9 +396,12 @@ const timingValues = [
       </section>
 
       <script is:inline>
-        const pxPerEighth = 48;
-        const horizonEighths = 32;
         const eighthMs = 240;
+        let pxPerEighth = 48;
+
+        function horizonEighths() {
+          return Number(align.value) * 2;
+        }
         const angleMap = {
           '0':'-130deg',
           '0.25':'-87deg',
@@ -478,16 +481,19 @@ const timingValues = [
         function renderRuler() {
           ruler.innerHTML = '';
           const measure = Number(align.value);
-          stage.style.width = (horizonEighths * pxPerEighth) + 'px';
-          measureInfo.textContent = `Align = ${measure}/8`;
+          const horizon = horizonEighths();
+          const available = Math.max(640, timelineScroll.clientWidth || 640);
+          pxPerEighth = available / horizon;
+          stage.style.width = available + 'px';
+          measureInfo.textContent = `2 measures · Align = ${measure}/8`;
 
-          for (let i = 0; i <= horizonEighths; i++) {
+          for (let i = 0; i <= horizon; i++) {
             const line = document.createElement('div');
             line.className = i % measure === 0 ? 'bar-line' : 'eighth-line';
             line.style.left = (i * pxPerEighth) + 'px';
             ruler.appendChild(line);
 
-            if (i % measure === 0 && i < horizonEighths) {
+            if (i % measure === 0 && i < horizon) {
               const label = document.createElement('div');
               label.className = 'bar-label';
               label.style.left = (i * pxPerEighth) + 'px';
@@ -504,7 +510,8 @@ const timingValues = [
           let index = 0;
           let safety = 0;
 
-          while (p < horizonEighths && safety < 256) {
+          const horizon = horizonEighths();
+          while (p < horizon && safety < 256) {
             const stepEl = steps[index];
             const value = currentValue(stepEl);
             let duration = value;
@@ -592,7 +599,7 @@ const timingValues = [
 
           if (value === -1) {
             duration = nextBoundary(pos, measure) - pos;
-            description = `Step ${stepIndex + 1}: ALIGN — hold ${duration}/8 until next ${measure}/8 boundary`;
+            description = `Step ${stepIndex + 1}: ALIGN — wait ${duration}/8 until the next measure boundary`;
           } else if (value === 0) {
             duration = 0;
             description = `Step ${stepIndex + 1}: SKIP`;
@@ -600,16 +607,15 @@ const timingValues = [
             description = `Step ${stepIndex + 1}: ${timingOptions[currentIndex(stepEl)].label}`;
           }
 
-          activeSegment = findSegmentAt(stepIndex, startPos % horizonEighths);
+          const horizon = horizonEighths();
+          activeSegment = findSegmentAt(stepIndex, startPos % horizon);
           if (activeSegment) activeSegment.classList.add('active');
 
           status.textContent = description;
 
           if (duration > 0) {
             pos += duration;
-            playhead.style.left = ((pos % horizonEighths) * pxPerEighth) + 'px';
-            const target = Math.max(0, ((pos % horizonEighths) * pxPerEighth) - timelineScroll.clientWidth * 0.35);
-            timelineScroll.scrollTo({left: target, behavior:'smooth'});
+            playhead.style.left = ((pos % horizon) * pxPerEighth) + 'px';
           }
 
           stepIndex = (stepIndex + 1) % 16;
@@ -700,6 +706,12 @@ const timingValues = [
             document.querySelector('#reset').click();
             setTimingIndex(step, currentIndex(step) + (event.deltaY < 0 ? 1 : -1));
           }, { passive:false });
+        });
+
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(redraw, 120);
         });
 
         redraw();
