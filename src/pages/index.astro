@@ -411,7 +411,7 @@ const timingValues = [
                   aria-valuetext={i===7 ? "ALIGN" : "1/8"}
                   data-index={i===7 ? "6" : "3"}
                 >
-                  {[-130,-86,-43,0,43,86,130].map(a => <i class="knob-dot" style={`--dot-angle:${a}deg`}></i>)}
+                  {[-150,-120,-60,0,60,120,150].map(a => <i class="knob-dot" style={`--dot-angle:${a}deg`}></i>)}
                   <div class="knob" style="--angle:0deg"></div>
                 </div>
                 <div class="timing-value" aria-hidden="true">{i===7 ? "ALIGN" : "1/8"}</div>
@@ -457,13 +457,13 @@ const timingValues = [
           return Number(align.value) * 4;
         }
         const angleMap = {
-          '0':'-130deg',
-          '0.25':'-87deg',
-          '0.5':'-43deg',
+          '0':'-150deg',
+          '0.25':'-120deg',
+          '0.5':'-60deg',
           '1':'0deg',
-          '2':'43deg',
-          '4':'87deg',
-          '-1':'130deg'
+          '2':'60deg',
+          '4':'120deg',
+          '-1':'150deg'
         };
 
         const steps = [...document.querySelectorAll('.step')];
