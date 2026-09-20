@@ -1,12 +1,12 @@
 ---
 const timingValues = [
-  { label: 'SKIP', width: 0 },
-  { label: '1/32', width: 1 },
-  { label: '1/16', width: 2 },
-  { label: '1/8', width: 4 },
-  { label: '1/4', width: 8 },
-  { label: '1/2', width: 16 },
-  { label: 'ALIGN', width: -1 }
+  { label: 'SKIP', eighths: 0 },
+  { label: '1/32', eighths: 0.25 },
+  { label: '1/16', eighths: 0.5 },
+  { label: '1/8', eighths: 1 },
+  { label: '1/4', eighths: 2 },
+  { label: '1/2', eighths: 4 },
+  { label: 'ALIGN', eighths: -1 }
 ];
 ---
 
@@ -16,28 +16,277 @@ const timingValues = [
     <meta name="viewport" content="width=device-width" />
     <title>SND SAM-16 Online Manual</title>
     <style>
-      :root { font-family: Inter, system-ui, sans-serif; color: #171717; background: #f2f1ec; }
+      :root {
+        font-family: Inter, system-ui, sans-serif;
+        color: #171717;
+        background: #f2f1ec;
+      }
+      * { box-sizing: border-box; }
       body { margin: 0; }
-      main { max-width: 1180px; margin: 0 auto; padding: 40px 24px 80px; }
-      h1,h2 { letter-spacing: -.02em; }
-      .card { background: #fff; border: 1px solid #d7d4cb; border-radius: 14px; padding: 24px; margin-top: 24px; }
-      .controls { display:flex; gap:18px; flex-wrap:wrap; align-items:end; }
-      label { font-size: 13px; font-weight: 700; display:block; margin-bottom:6px; }
-      select, button { font: inherit; padding: 9px 12px; }
-      .steps { display:grid; grid-template-columns: repeat(16, minmax(48px,1fr)); gap:8px; margin-top:22px; overflow-x:auto; padding-bottom:8px; }
-      .step { min-width:48px; text-align:center; }
-      .step-number { font-size:12px; font-weight:700; margin-bottom:8px; }
-      .knob { width:42px; height:42px; border:2px solid #222; border-radius:50%; margin:0 auto 6px; position:relative; background:#ebe9e2; }
-      .knob::after { content:''; width:2px; height:15px; background:#222; position:absolute; left:19px; top:5px; transform-origin:1px 16px; transform:rotate(var(--angle)); }
-      .step select { width:100%; font-size:11px; padding:4px 2px; }
-      .timeline { margin-top:30px; position:relative; border-top:2px solid #222; min-height:130px; padding-top:14px; overflow-x:auto; }
-      .measure-grid { display:grid; grid-template-columns:repeat(16,48px); min-width:768px; }
-      .tick { border-left:1px solid #bbb; height:90px; position:relative; font-size:10px; padding-left:3px; }
-      .tick.major { border-left:2px solid #222; }
-      .playhead { position:absolute; top:0; bottom:0; width:3px; background:#111; left:0; transition:left .08s linear; pointer-events:none; }
-      .status { margin-top:12px; font-family:ui-monospace, SFMono-Regular, Menlo, monospace; }
-      .note { margin-top:18px; max-width:780px; line-height:1.5; }
-      @media (max-width:800px) { .steps { grid-template-columns:repeat(8, minmax(48px,1fr)); } }
+      main { max-width: 1380px; margin: 0 auto; padding: 36px 24px 80px; }
+      h1,h2 { letter-spacing: -.025em; }
+      .card {
+        background: #fff;
+        border: 1px solid #d7d4cb;
+        border-radius: 14px;
+        padding: 28px;
+        margin-top: 24px;
+      }
+      .note { max-width: 900px; line-height: 1.55; }
+      .hardware-caption {
+        margin-top: 24px;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+      }
+      .controls {
+        display:flex;
+        gap:28px;
+        flex-wrap:wrap;
+        align-items:end;
+        margin-top: 20px;
+      }
+      .control-group { display:flex; gap:12px; align-items:end; }
+      label {
+        font-size: 12px;
+        font-weight: 800;
+        display:block;
+        margin-bottom:6px;
+        letter-spacing:.03em;
+      }
+      select, button {
+        font: inherit;
+        padding: 8px 10px;
+        background: #f7f6f1;
+        border: 1px solid #999;
+      }
+      button { cursor:pointer; min-width:76px; }
+      button:hover { background:#eceae2; }
+
+      .steps-wrap { overflow-x:auto; padding-bottom:8px; }
+      .steps {
+        display:grid;
+        grid-template-columns: repeat(16, minmax(64px, 1fr));
+        gap:8px;
+        margin-top:12px;
+        min-width:1180px;
+      }
+      .step {
+        min-width:64px;
+        text-align:center;
+        padding:8px 3px 10px;
+        border:1px solid transparent;
+        border-radius:8px;
+        transition:background .12s ease, border-color .12s ease, transform .12s ease;
+      }
+      .step.active {
+        background:#f1efe6;
+        border-color:#171717;
+        transform:translateY(-2px);
+      }
+      .step.align-step { background:#faf4dc; }
+      .step-number {
+        font-size:11px;
+        font-weight:800;
+        margin-bottom:8px;
+      }
+      .knob-shell {
+        width:52px;
+        height:52px;
+        margin:0 auto 8px;
+        position:relative;
+      }
+      .knob {
+        width:44px;
+        height:44px;
+        position:absolute;
+        left:4px;
+        top:4px;
+        border:2px solid #222;
+        border-radius:50%;
+        background:#ebe9e2;
+        box-shadow:inset 0 0 0 2px #f7f6f1;
+      }
+      .knob::after {
+        content:'';
+        width:2px;
+        height:16px;
+        background:#222;
+        position:absolute;
+        left:19px;
+        top:4px;
+        transform-origin:1px 17px;
+        transform:rotate(var(--angle));
+      }
+      .knob-dot {
+        position:absolute;
+        width:3px;
+        height:3px;
+        border-radius:50%;
+        background:#777;
+        left:24px;
+        top:0;
+        transform-origin:2px 26px;
+        transform:rotate(var(--dot-angle)) translateY(-1px);
+      }
+      .step select {
+        width:100%;
+        font-size:11px;
+        padding:4px 2px;
+      }
+
+      .explain-strip {
+        display:flex;
+        gap:14px;
+        align-items:center;
+        flex-wrap:wrap;
+        margin-top:18px;
+        padding:12px 14px;
+        background:#f7f6f1;
+        border-radius:8px;
+        font-size:13px;
+      }
+      .legend-chip {
+        display:inline-flex;
+        align-items:center;
+        gap:6px;
+      }
+      .legend-swatch {
+        width:26px;
+        height:12px;
+        border:1px solid #777;
+        background:#e6e3d9;
+      }
+      .legend-swatch.align {
+        background:repeating-linear-gradient(
+          135deg,
+          #f3e8ba 0 6px,
+          #fff8dc 6px 12px
+        );
+      }
+
+      .timeline-shell {
+        margin-top:28px;
+        border:1px solid #cbc8bd;
+        border-radius:10px;
+        overflow:hidden;
+        background:#fbfaf6;
+      }
+      .timeline-toolbar {
+        display:flex;
+        justify-content:space-between;
+        gap:16px;
+        align-items:center;
+        padding:10px 14px;
+        border-bottom:1px solid #d8d5ca;
+        font-size:12px;
+      }
+      .timeline-scroll {
+        overflow-x:auto;
+        position:relative;
+      }
+      .timeline-stage {
+        position:relative;
+        min-height:154px;
+        width:1536px;
+      }
+      .ruler {
+        position:absolute;
+        left:0;
+        top:0;
+        height:48px;
+        width:100%;
+      }
+      .bar-line {
+        position:absolute;
+        top:0;
+        bottom:0;
+        border-left:2px solid #292929;
+        z-index:1;
+      }
+      .eighth-line {
+        position:absolute;
+        top:25px;
+        height:18px;
+        border-left:1px solid #d1cec3;
+        z-index:0;
+      }
+      .bar-label {
+        position:absolute;
+        top:6px;
+        font-size:11px;
+        font-weight:800;
+        transform:translateX(5px);
+        white-space:nowrap;
+      }
+      .sequence-track {
+        position:absolute;
+        left:0;
+        top:52px;
+        height:70px;
+        width:100%;
+      }
+      .segment {
+        position:absolute;
+        top:8px;
+        height:50px;
+        min-width:3px;
+        border:1px solid #858175;
+        background:#e7e4da;
+        border-radius:4px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        overflow:hidden;
+        font-size:11px;
+        font-weight:800;
+        transition:filter .12s ease, transform .12s ease;
+      }
+      .segment.align {
+        background:repeating-linear-gradient(
+          135deg,
+          #f3e8ba 0 8px,
+          #fff8dc 8px 16px
+        );
+        border-color:#8f7928;
+      }
+      .segment.skip {
+        width:3px !important;
+        background:#b8b4a9;
+        border:0;
+        border-radius:0;
+      }
+      .segment.active {
+        filter:brightness(.83);
+        transform:translateY(-4px);
+      }
+      .playhead {
+        position:absolute;
+        top:0;
+        bottom:0;
+        width:3px;
+        background:#c33422;
+        left:0;
+        z-index:10;
+        pointer-events:none;
+        transition:left .08s linear;
+      }
+      .status {
+        padding:12px 14px;
+        border-top:1px solid #d8d5ca;
+        font-family:ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size:13px;
+      }
+      .microcopy {
+        margin-top:10px;
+        font-size:12px;
+        color:#555;
+      }
+      @media (max-width:800px) {
+        main { padding:24px 12px 60px; }
+        .card { padding:18px; }
+      }
     </style>
   </head>
   <body>
@@ -48,104 +297,299 @@ const timingValues = [
       <section class="card">
         <h2>Variable Timing + ALIGN</h2>
         <p class="note">
-          In <strong>var.</strong> mode, Row 3 sets the duration of each step. The far-right Row 3 position is
-          <strong>ALIGN</strong>: the SAM waits until the end of the current measure before continuing.
-          The global <strong>Align</strong> setting defines that measure length.
+          In <strong>var.</strong> mode, <strong>Row 3</strong> sets the duration of each step.
+          Turn a Row 3 knob fully clockwise to <strong>ALIGN</strong> and the SAM holds at that
+          point until the end of the current measure. The global <strong>Align</strong> setting
+          defines the length of that measure.
         </p>
 
         <div class="controls">
           <div>
-            <label for="align">Global Align</label>
-            <select id="align">
-              {Array.from({length:16}, (_,i) => <option value={i+1} selected={i===7}>{i+1}/8</option>)}
-            </select>
-          </div>
-          <div>
-            <label>Transport</label>
-            <button id="play">Play</button>
-            <button id="reset">Reset</button>
-          </div>
-        </div>
-
-        <div class="steps" id="steps">
-          {Array.from({length:16}, (_,i) => (
-            <div class="step" data-step={i}>
-              <div class="step-number">STEP {i+1}</div>
-              <div class="knob" style="--angle: 0deg"></div>
-              <select aria-label={`Row 3 timing for step ${i+1}`}>
-                {timingValues.map((v,idx) =>
-                  <option value={v.width} selected={(i===7 && idx===6) || (i!==7 && idx===3)}>{v.label}</option>
-                )}
+            <label for="align">GLOBAL ALIGN — measure length</label>
+            <div class="control-group">
+              <select id="align">
+                {Array.from({length:16}, (_,i) => <option value={i+1} selected={i===7}>{i+1}/8</option>)}
               </select>
             </div>
-          ))}
+          </div>
+          <div>
+            <label>TRANSPORT</label>
+            <div class="control-group">
+              <button id="play">Play</button>
+              <button id="reset">Reset</button>
+            </div>
+          </div>
         </div>
 
-        <div class="timeline">
-          <div class="measure-grid" id="grid"></div>
-          <div class="playhead" id="playhead"></div>
+        <div class="hardware-caption">ROW 3 — step length in VAR mode</div>
+
+        <div class="steps-wrap">
+          <div class="steps" id="steps">
+            {Array.from({length:16}, (_,i) => (
+              <div class="step" data-step={i}>
+                <div class="step-number">STEP {i+1}</div>
+                <div class="knob-shell" aria-hidden="true">
+                  {[-130,-86,-43,0,43,86,130].map(a => <i class="knob-dot" style={`--dot-angle:${a}deg`}></i>)}
+                  <div class="knob" style="--angle:0deg"></div>
+                </div>
+                <select aria-label={`Row 3 timing for step ${i+1}`}>
+                  {timingValues.map((v,idx) =>
+                    <option value={v.eighths} selected={(i===7 && idx===6) || (i!==7 && idx===3)}>{v.label}</option>
+                  )}
+                </select>
+              </div>
+            ))}
+          </div>
         </div>
-        <div class="status" id="status">Stopped — Step 1</div>
+
+        <div class="explain-strip">
+          <span><strong>What the graphic means:</strong></span>
+          <span class="legend-chip"><span class="legend-swatch"></span> normal step duration</span>
+          <span class="legend-chip"><span class="legend-swatch align"></span> ALIGN hold until measure boundary</span>
+        </div>
+
+        <div class="timeline-shell">
+          <div class="timeline-toolbar">
+            <strong>MASTER MEASURE vs. SAM STEP TIMING</strong>
+            <span id="measureInfo">Align = 8/8</span>
+          </div>
+          <div class="timeline-scroll" id="timelineScroll">
+            <div class="timeline-stage" id="timelineStage">
+              <div class="ruler" id="ruler"></div>
+              <div class="sequence-track" id="sequenceTrack"></div>
+              <div class="playhead" id="playhead"></div>
+            </div>
+          </div>
+          <div class="status" id="status">Stopped — Step 1</div>
+        </div>
+
+        <p class="microcopy">
+          Change any Row 3 knob value and the timeline redraws immediately. The width of each block is the time that step occupies.
+        </p>
       </section>
 
       <script is:inline>
-        const eighthPixels = 48;
-        const angles = { '0':'-130deg','1':'-100deg','2':'-70deg','4':'0deg','8':'45deg','16':'90deg','-1':'130deg' };
+        const pxPerEighth = 48;
+        const horizonEighths = 32;
+        const eighthMs = 240;
+        const angleMap = {
+          '0':'-130deg',
+          '0.25':'-87deg',
+          '0.5':'-43deg',
+          '1':'0deg',
+          '2':'43deg',
+          '4':'87deg',
+          '-1':'130deg'
+        };
+
         const steps = [...document.querySelectorAll('.step')];
         const align = document.querySelector('#align');
-        const grid = document.querySelector('#grid');
+        const ruler = document.querySelector('#ruler');
+        const sequenceTrack = document.querySelector('#sequenceTrack');
+        const stage = document.querySelector('#timelineStage');
         const playhead = document.querySelector('#playhead');
         const status = document.querySelector('#status');
-        let running=false, timer=null, stepIndex=0, pos=0;
+        const measureInfo = document.querySelector('#measureInfo');
+        const timelineScroll = document.querySelector('#timelineScroll');
 
-        function renderGrid(){
-          grid.innerHTML='';
-          const length = Number(align.value);
-          for(let i=0;i<64;i++){
-            const tick=document.createElement('div');
-            tick.className='tick'+(i%length===0?' major':'');
-            tick.textContent=i%length===0 ? `BAR ${Math.floor(i/length)+1}` : '';
-            grid.appendChild(tick);
-          }
+        let running = false;
+        let timer = null;
+        let stepIndex = 0;
+        let pos = 0;
+        let activeSegment = null;
+
+        function currentValue(stepEl) {
+          return Number(stepEl.querySelector('select').value);
         }
-        function refreshKnobs(){
-          steps.forEach(s=>{
-            const val=s.querySelector('select').value;
-            s.querySelector('.knob').style.setProperty('--angle', angles[val] || '0deg');
+
+        function nextBoundary(position, measureLength) {
+          const remainder = position % measureLength;
+          if (Math.abs(remainder) < 0.000001) return position + measureLength;
+          return position + (measureLength - remainder);
+        }
+
+        function refreshKnobs() {
+          steps.forEach(step => {
+            const value = step.querySelector('select').value;
+            step.querySelector('.knob').style.setProperty('--angle', angleMap[value] || '0deg');
+            step.classList.toggle('align-step', value === '-1');
           });
         }
-        function next(){
-          if(!running) return;
-          const sel=steps[stepIndex].querySelector('select');
-          const v=Number(sel.value);
-          if(v===-1){
-            const measure=Number(align.value);
-            const nextBoundary=Math.ceil((pos+0.0001)/measure)*measure;
-            pos=nextBoundary;
-            status.textContent=`Step ${stepIndex+1}: ALIGN — waiting to measure boundary ${nextBoundary}/8`;
-          } else if(v===0){
-            status.textContent=`Step ${stepIndex+1}: SKIP`;
-          } else {
-            pos += v/4;
-            status.textContent=`Step ${stepIndex+1}: ${sel.options[sel.selectedIndex].text}`;
+
+        function renderRuler() {
+          ruler.innerHTML = '';
+          const measure = Number(align.value);
+          stage.style.width = (horizonEighths * pxPerEighth) + 'px';
+          measureInfo.textContent = `Align = ${measure}/8`;
+
+          for (let i = 0; i <= horizonEighths; i++) {
+            const line = document.createElement('div');
+            line.className = i % measure === 0 ? 'bar-line' : 'eighth-line';
+            line.style.left = (i * pxPerEighth) + 'px';
+            ruler.appendChild(line);
+
+            if (i % measure === 0 && i < horizonEighths) {
+              const label = document.createElement('div');
+              label.className = 'bar-label';
+              label.style.left = (i * pxPerEighth) + 'px';
+              label.textContent = `MEASURE ${Math.floor(i / measure) + 1}`;
+              ruler.appendChild(label);
+            }
           }
-          playhead.style.left=(pos*eighthPixels)+'px';
-          stepIndex=(stepIndex+1)%16;
-          timer=setTimeout(next, 280);
         }
-        document.querySelector('#play').onclick=()=>{
-          running=!running;
-          document.querySelector('#play').textContent=running?'Pause':'Play';
-          if(running) next(); else clearTimeout(timer);
+
+        function computeSegments() {
+          const measure = Number(align.value);
+          const result = [];
+          let p = 0;
+          let index = 0;
+          let safety = 0;
+
+          while (p < horizonEighths && safety < 256) {
+            const stepEl = steps[index];
+            const value = currentValue(stepEl);
+            let duration = value;
+            let type = 'normal';
+
+            if (value === -1) {
+              duration = nextBoundary(p, measure) - p;
+              type = 'align';
+            } else if (value === 0) {
+              duration = 0;
+              type = 'skip';
+            }
+
+            result.push({
+              step: index + 1,
+              start: p,
+              duration,
+              type
+            });
+
+            if (duration > 0) p += duration;
+            index = (index + 1) % 16;
+            safety++;
+          }
+          return result;
+        }
+
+        function renderSequence() {
+          sequenceTrack.innerHTML = '';
+          const segments = computeSegments();
+
+          segments.forEach((seg, i) => {
+            const block = document.createElement('div');
+            block.className = 'segment ' + seg.type;
+            block.dataset.segment = String(i);
+            block.dataset.step = String(seg.step - 1);
+            block.style.left = (seg.start * pxPerEighth) + 'px';
+
+            if (seg.type === 'skip') {
+              block.style.width = '3px';
+              block.title = `Step ${seg.step}: SKIP`;
+            } else {
+              block.style.width = Math.max(4, seg.duration * pxPerEighth - 2) + 'px';
+              block.textContent = seg.type === 'align' ? `${seg.step} · ALIGN` : String(seg.step);
+              block.title = seg.type === 'align'
+                ? `Step ${seg.step}: ALIGN hold ${seg.duration}/8 until measure boundary`
+                : `Step ${seg.step}: ${seg.duration}/8`;
+            }
+            sequenceTrack.appendChild(block);
+          });
+        }
+
+        function redraw() {
+          refreshKnobs();
+          renderRuler();
+          renderSequence();
+        }
+
+        function clearActive() {
+          steps.forEach(s => s.classList.remove('active'));
+          if (activeSegment) activeSegment.classList.remove('active');
+          activeSegment = null;
+        }
+
+        function findSegmentAt(step, startPos) {
+          const segments = [...sequenceTrack.querySelectorAll('.segment')];
+          return segments.find(el => {
+            const left = parseFloat(el.style.left) / pxPerEighth;
+            return Number(el.dataset.step) === step && Math.abs(left - startPos) < 0.001;
+          }) || null;
+        }
+
+        function advance() {
+          if (!running) return;
+
+          clearActive();
+          const stepEl = steps[stepIndex];
+          stepEl.classList.add('active');
+
+          const value = currentValue(stepEl);
+          const measure = Number(align.value);
+          const startPos = pos;
+          let duration = value;
+          let description = '';
+
+          if (value === -1) {
+            duration = nextBoundary(pos, measure) - pos;
+            description = `Step ${stepIndex + 1}: ALIGN — hold ${duration}/8 until next ${measure}/8 boundary`;
+          } else if (value === 0) {
+            duration = 0;
+            description = `Step ${stepIndex + 1}: SKIP`;
+          } else {
+            const sel = stepEl.querySelector('select');
+            description = `Step ${stepIndex + 1}: ${sel.options[sel.selectedIndex].text}`;
+          }
+
+          activeSegment = findSegmentAt(stepIndex, startPos % horizonEighths);
+          if (activeSegment) activeSegment.classList.add('active');
+
+          status.textContent = description;
+
+          if (duration > 0) {
+            pos += duration;
+            playhead.style.left = ((pos % horizonEighths) * pxPerEighth) + 'px';
+            const target = Math.max(0, ((pos % horizonEighths) * pxPerEighth) - timelineScroll.clientWidth * 0.35);
+            timelineScroll.scrollTo({left: target, behavior:'smooth'});
+          }
+
+          stepIndex = (stepIndex + 1) % 16;
+          timer = setTimeout(advance, Math.max(90, duration > 0 ? duration * eighthMs : 90));
+        }
+
+        document.querySelector('#play').onclick = () => {
+          running = !running;
+          document.querySelector('#play').textContent = running ? 'Pause' : 'Play';
+          if (running) advance();
+          else clearTimeout(timer);
         };
-        document.querySelector('#reset').onclick=()=>{
-          running=false; clearTimeout(timer); stepIndex=0; pos=0;
-          playhead.style.left='0px'; status.textContent='Stopped — Step 1';
-          document.querySelector('#play').textContent='Play';
+
+        document.querySelector('#reset').onclick = () => {
+          running = false;
+          clearTimeout(timer);
+          clearActive();
+          stepIndex = 0;
+          pos = 0;
+          playhead.style.left = '0px';
+          timelineScroll.scrollLeft = 0;
+          status.textContent = 'Stopped — Step 1';
+          document.querySelector('#play').textContent = 'Play';
         };
-        align.onchange=renderGrid;
-        steps.forEach(s=>s.querySelector('select').onchange=refreshKnobs);
-        renderGrid(); refreshKnobs();
+
+        align.onchange = () => {
+          document.querySelector('#reset').click();
+          redraw();
+        };
+
+        steps.forEach(step => {
+          step.querySelector('select').onchange = () => {
+            document.querySelector('#reset').click();
+            redraw();
+          };
+        });
+
+        redraw();
       </script>
     </main>
   </body>
