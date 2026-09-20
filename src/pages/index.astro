@@ -344,20 +344,6 @@ const timingValues = [
         pointer-events:none;
         transition:left .08s linear;
       }
-      .loop-marker {
-        position:absolute;
-        right:8px;
-        top:44px;
-        z-index:12;
-        font-size:10px;
-        font-weight:800;
-        letter-spacing:.05em;
-        text-transform:uppercase;
-        background:#fbfaf6;
-        border:1px solid #c9c5b9;
-        border-radius:4px;
-        padding:4px 6px;
-      }
       .status {
         padding:12px 14px;
         border-top:1px solid #d8d5ca;
@@ -452,7 +438,6 @@ const timingValues = [
               <div class="reference-track" id="referenceTrack">
                 <span class="reference-label">STRAIGHT 16TH GRID</span>
               </div>
-              <div class="loop-marker">↩ Step 1</div>
               <div class="playhead" id="playhead"></div>
             </div>
           </div>
@@ -460,7 +445,7 @@ const timingValues = [
         </div>
 
         <p class="microcopy">
-          Drag a Row 3 knob up or down to move through its detents. The upper lane shows the SAM timing; the straight 16th grid underneath stays fixed, so drift and ALIGN are visible immediately.
+          Drag a Row 3 knob up or down to move through its detents. The upper lane shows the SAM timing; the straight 16th grid underneath stays fixed. The 4-bar frame is only a viewing window — it does not reset the SAM.
         </p>
       </section>
 
@@ -712,26 +697,19 @@ const timingValues = [
 
           if (duration > 0) {
             const nextPos = pos + duration;
-            const reachesPhraseEnd = nextPos >= horizon - 0.000001;
+            const reachesWindowEnd = nextPos >= horizon - 0.000001;
 
-            if (reachesPhraseEnd) {
+            if (reachesWindowEnd) {
               pos = horizon;
               playhead.style.left = (horizon * pxPerEighth) + 'px';
 
+              const nextHardwareStep = (stepIndex + 1) % 16;
               const delay = Math.max(90, duration * eighthMs);
               timer = setTimeout(() => {
-                if (!running) return;
+                running = false;
                 clearActive();
-                pos = 0;
-                stepIndex = 0;
-                playhead.style.transition = 'none';
-                playhead.style.left = '0px';
-                requestAnimationFrame(() => {
-                  requestAnimationFrame(() => {
-                    playhead.style.transition = 'left .08s linear';
-                    advance();
-                  });
-                });
+                document.querySelector('#play').textContent = 'Play';
+                status.textContent = `End of 4-bar view — SAM continues with Step ${nextHardwareStep + 1}`;
               }, delay);
               return;
             }
