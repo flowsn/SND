@@ -1,21 +1,21 @@
 # Deployment
 
-Production is deployed from `main` via GitHub Actions.
+Production deploys from `main` to the IONOS webspace over SFTP.
 
-Required repository secrets:
+## GitHub Actions secrets
 
-- `HETZNER_HOST` — hostname or IP of the server
-- `HETZNER_USER` — SSH deployment user
-- `HETZNER_SSH_KEY` — private SSH key for that user
-- `HETZNER_DEPLOY_PATH` — absolute target directory served by the web server
+The workflow expects these repository secrets:
 
-Recommended server setup:
+- `IONOS_SFTP_HOST`
+- `IONOS_SFTP_PORT`
+- `IONOS_SFTP_USER`
+- `IONOS_SFTP_PASSWORD`
+- `IONOS_DEPLOY_PATH`
 
-1. Create a dedicated deployment user with write access only to the site directory.
-2. Add the corresponding public key to that user's `authorized_keys`.
-3. Point nginx/Caddy at `HETZNER_DEPLOY_PATH`.
-4. Keep production edits out of the server filesystem; make changes in Git and deploy them.
+The current deployment path is `/sam16/`.
 
-Workflow:
+## Release flow
 
-`feature branch → pull request → review → merge to main → automatic deployment`
+`feature branch → pull request → merge to main → Astro build → SFTP upload to IONOS`
+
+The deployment helper uploads the generated `dist/` directory. Credentials are read only from GitHub Actions secrets and are never stored in the repository.
