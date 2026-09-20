@@ -92,17 +92,27 @@ const timingValues = [
         margin-bottom:8px;
       }
       .knob-shell {
-        width:52px;
-        height:52px;
+        width:58px;
+        height:58px;
         margin:0 auto 8px;
         position:relative;
+        cursor:ns-resize;
+        touch-action:none;
+        border-radius:50%;
+        outline:none;
+      }
+      .knob-shell:focus-visible {
+        box-shadow:0 0 0 3px rgba(23,23,23,.22);
+      }
+      .knob-shell.dragging {
+        transform:scale(1.05);
       }
       .knob {
-        width:44px;
-        height:44px;
+        width:46px;
+        height:46px;
         position:absolute;
-        left:4px;
-        top:4px;
+        left:6px;
+        top:6px;
         border:2px solid #222;
         border-radius:50%;
         background:#ebe9e2;
@@ -114,9 +124,9 @@ const timingValues = [
         height:16px;
         background:#222;
         position:absolute;
-        left:19px;
+        left:20px;
         top:4px;
-        transform-origin:1px 17px;
+        transform-origin:1px 18px;
         transform:rotate(var(--angle));
       }
       .knob-dot {
@@ -125,15 +135,26 @@ const timingValues = [
         height:3px;
         border-radius:50%;
         background:#777;
-        left:24px;
+        left:27px;
         top:0;
-        transform-origin:2px 26px;
+        transform-origin:2px 29px;
         transform:rotate(var(--dot-angle)) translateY(-1px);
       }
-      .step select {
-        width:100%;
+      .timing-value {
+        min-height:25px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
         font-size:11px;
-        padding:4px 2px;
+        font-weight:800;
+        border:1px solid #b8b4a9;
+        border-radius:4px;
+        background:#f7f6f1;
+        user-select:none;
+      }
+      .step.align-step .timing-value {
+        border-color:#8f7928;
+        background:#fff8dc;
       }
 
       .explain-strip {
@@ -328,15 +349,21 @@ const timingValues = [
             {Array.from({length:16}, (_,i) => (
               <div class="step" data-step={i}>
                 <div class="step-number">STEP {i+1}</div>
-                <div class="knob-shell" aria-hidden="true">
+                <div
+                  class="knob-shell"
+                  role="slider"
+                  tabindex="0"
+                  aria-label={`Row 3 timing for step ${i+1}`}
+                  aria-valuemin="0"
+                  aria-valuemax="6"
+                  aria-valuenow={i===7 ? "6" : "3"}
+                  aria-valuetext={i===7 ? "ALIGN" : "1/8"}
+                  data-index={i===7 ? "6" : "3"}
+                >
                   {[-130,-86,-43,0,43,86,130].map(a => <i class="knob-dot" style={`--dot-angle:${a}deg`}></i>)}
                   <div class="knob" style="--angle:0deg"></div>
                 </div>
-                <select aria-label={`Row 3 timing for step ${i+1}`}>
-                  {timingValues.map((v,idx) =>
-                    <option value={v.eighths} selected={(i===7 && idx===6) || (i!==7 && idx===3)}>{v.label}</option>
-                  )}
-                </select>
+                <div class="timing-value" aria-hidden="true">{i===7 ? "ALIGN" : "1/8"}</div>
               </div>
             ))}
           </div>
@@ -364,7 +391,7 @@ const timingValues = [
         </div>
 
         <p class="microcopy">
-          Change any Row 3 knob value and the timeline redraws immediately. The width of each block is the time that step occupies.
+          Drag a Row 3 knob up or down to move through its detents. Arrow keys work when a knob is focused. The timeline redraws immediately.
         </p>
       </section>
 
@@ -398,8 +425,38 @@ const timingValues = [
         let pos = 0;
         let activeSegment = null;
 
+        const timingOptions = [
+          { label:'SKIP', value:0 },
+          { label:'1/32', value:0.25 },
+          { label:'1/16', value:0.5 },
+          { label:'1/8', value:1 },
+          { label:'1/4', value:2 },
+          { label:'1/2', value:4 },
+          { label:'ALIGN', value:-1 }
+        ];
+
+        function knobEl(stepEl) {
+          return stepEl.querySelector('.knob-shell');
+        }
+
+        function currentIndex(stepEl) {
+          return Number(knobEl(stepEl).dataset.index);
+        }
+
         function currentValue(stepEl) {
-          return Number(stepEl.querySelector('select').value);
+          return timingOptions[currentIndex(stepEl)].value;
+        }
+
+        function setTimingIndex(stepEl, nextIndex, redrawTimeline = true) {
+          const index = Math.max(0, Math.min(timingOptions.length - 1, nextIndex));
+          const shell = knobEl(stepEl);
+          const option = timingOptions[index];
+          shell.dataset.index = String(index);
+          shell.setAttribute('aria-valuenow', String(index));
+          shell.setAttribute('aria-valuetext', option.label);
+          stepEl.querySelector('.timing-value').textContent = option.label;
+          refreshKnob(stepEl);
+          if (redrawTimeline) renderSequence();
         }
 
         function nextBoundary(position, measureLength) {
@@ -408,12 +465,14 @@ const timingValues = [
           return position + (measureLength - remainder);
         }
 
+        function refreshKnob(step) {
+          const value = String(currentValue(step));
+          step.querySelector('.knob').style.setProperty('--angle', angleMap[value] || '0deg');
+          step.classList.toggle('align-step', value === '-1');
+        }
+
         function refreshKnobs() {
-          steps.forEach(step => {
-            const value = step.querySelector('select').value;
-            step.querySelector('.knob').style.setProperty('--angle', angleMap[value] || '0deg');
-            step.classList.toggle('align-step', value === '-1');
-          });
+          steps.forEach(refreshKnob);
         }
 
         function renderRuler() {
@@ -538,8 +597,7 @@ const timingValues = [
             duration = 0;
             description = `Step ${stepIndex + 1}: SKIP`;
           } else {
-            const sel = stepEl.querySelector('select');
-            description = `Step ${stepIndex + 1}: ${sel.options[sel.selectedIndex].text}`;
+            description = `Step ${stepIndex + 1}: ${timingOptions[currentIndex(stepEl)].label}`;
           }
 
           activeSegment = findSegmentAt(stepIndex, startPos % horizonEighths);
@@ -583,10 +641,65 @@ const timingValues = [
         };
 
         steps.forEach(step => {
-          step.querySelector('select').onchange = () => {
+          const shell = knobEl(step);
+          let startY = 0;
+          let startIndex = 0;
+          let movedIndex = 0;
+
+          shell.addEventListener('pointerdown', (event) => {
+            event.preventDefault();
             document.querySelector('#reset').click();
-            redraw();
+            shell.setPointerCapture(event.pointerId);
+            shell.classList.add('dragging');
+            startY = event.clientY;
+            startIndex = currentIndex(step);
+            movedIndex = startIndex;
+            shell.focus();
+          });
+
+          shell.addEventListener('pointermove', (event) => {
+            if (!shell.hasPointerCapture(event.pointerId)) return;
+            const delta = startY - event.clientY;
+            const detents = Math.round(delta / 18);
+            const nextIndex = Math.max(0, Math.min(6, startIndex + detents));
+            if (nextIndex !== movedIndex) {
+              movedIndex = nextIndex;
+              setTimingIndex(step, nextIndex);
+            }
+          });
+
+          const endDrag = (event) => {
+            if (shell.hasPointerCapture(event.pointerId)) shell.releasePointerCapture(event.pointerId);
+            shell.classList.remove('dragging');
           };
+          shell.addEventListener('pointerup', endDrag);
+          shell.addEventListener('pointercancel', endDrag);
+
+          shell.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowUp' || event.key === 'ArrowRight') {
+              event.preventDefault();
+              document.querySelector('#reset').click();
+              setTimingIndex(step, currentIndex(step) + 1);
+            } else if (event.key === 'ArrowDown' || event.key === 'ArrowLeft') {
+              event.preventDefault();
+              document.querySelector('#reset').click();
+              setTimingIndex(step, currentIndex(step) - 1);
+            } else if (event.key === 'Home') {
+              event.preventDefault();
+              document.querySelector('#reset').click();
+              setTimingIndex(step, 0);
+            } else if (event.key === 'End') {
+              event.preventDefault();
+              document.querySelector('#reset').click();
+              setTimingIndex(step, 6);
+            }
+          });
+
+          shell.addEventListener('wheel', (event) => {
+            event.preventDefault();
+            document.querySelector('#reset').click();
+            setTimingIndex(step, currentIndex(step) + (event.deltaY < 0 ? 1 : -1));
+          }, { passive:false });
         });
 
         redraw();
