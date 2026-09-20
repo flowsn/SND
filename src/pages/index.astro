@@ -1,0 +1,152 @@
+---
+const timingValues = [
+  { label: 'SKIP', width: 0 },
+  { label: '1/32', width: 1 },
+  { label: '1/16', width: 2 },
+  { label: '1/8', width: 4 },
+  { label: '1/4', width: 8 },
+  { label: '1/2', width: 16 },
+  { label: 'ALIGN', width: -1 }
+];
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>SND SAM-16 Online Manual</title>
+    <style>
+      :root { font-family: Inter, system-ui, sans-serif; color: #171717; background: #f2f1ec; }
+      body { margin: 0; }
+      main { max-width: 1180px; margin: 0 auto; padding: 40px 24px 80px; }
+      h1,h2 { letter-spacing: -.02em; }
+      .card { background: #fff; border: 1px solid #d7d4cb; border-radius: 14px; padding: 24px; margin-top: 24px; }
+      .controls { display:flex; gap:18px; flex-wrap:wrap; align-items:end; }
+      label { font-size: 13px; font-weight: 700; display:block; margin-bottom:6px; }
+      select, button { font: inherit; padding: 9px 12px; }
+      .steps { display:grid; grid-template-columns: repeat(16, minmax(48px,1fr)); gap:8px; margin-top:22px; overflow-x:auto; padding-bottom:8px; }
+      .step { min-width:48px; text-align:center; }
+      .step-number { font-size:12px; font-weight:700; margin-bottom:8px; }
+      .knob { width:42px; height:42px; border:2px solid #222; border-radius:50%; margin:0 auto 6px; position:relative; background:#ebe9e2; }
+      .knob::after { content:''; width:2px; height:15px; background:#222; position:absolute; left:19px; top:5px; transform-origin:1px 16px; transform:rotate(var(--angle)); }
+      .step select { width:100%; font-size:11px; padding:4px 2px; }
+      .timeline { margin-top:30px; position:relative; border-top:2px solid #222; min-height:130px; padding-top:14px; overflow-x:auto; }
+      .measure-grid { display:grid; grid-template-columns:repeat(16,48px); min-width:768px; }
+      .tick { border-left:1px solid #bbb; height:90px; position:relative; font-size:10px; padding-left:3px; }
+      .tick.major { border-left:2px solid #222; }
+      .playhead { position:absolute; top:0; bottom:0; width:3px; background:#111; left:0; transition:left .08s linear; pointer-events:none; }
+      .status { margin-top:12px; font-family:ui-monospace, SFMono-Regular, Menlo, monospace; }
+      .note { margin-top:18px; max-width:780px; line-height:1.5; }
+      @media (max-width:800px) { .steps { grid-template-columns:repeat(8, minmax(48px,1fr)); } }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>SND SAM-16 Online Manual</h1>
+      <p>Interactive documentation prototype.</p>
+
+      <section class="card">
+        <h2>Variable Timing + ALIGN</h2>
+        <p class="note">
+          In <strong>var.</strong> mode, Row 3 sets the duration of each step. The far-right Row 3 position is
+          <strong>ALIGN</strong>: the SAM waits until the end of the current measure before continuing.
+          The global <strong>Align</strong> setting defines that measure length.
+        </p>
+
+        <div class="controls">
+          <div>
+            <label for="align">Global Align</label>
+            <select id="align">
+              {Array.from({length:16}, (_,i) => <option value={i+1} selected={i===7}>{i+1}/8</option>)}
+            </select>
+          </div>
+          <div>
+            <label>Transport</label>
+            <button id="play">Play</button>
+            <button id="reset">Reset</button>
+          </div>
+        </div>
+
+        <div class="steps" id="steps">
+          {Array.from({length:16}, (_,i) => (
+            <div class="step" data-step={i}>
+              <div class="step-number">STEP {i+1}</div>
+              <div class="knob" style="--angle: 0deg"></div>
+              <select aria-label={`Row 3 timing for step ${i+1}`}>
+                {timingValues.map((v,idx) =>
+                  <option value={v.width} selected={(i===7 && idx===6) || (i!==7 && idx===3)}>{v.label}</option>
+                )}
+              </select>
+            </div>
+          ))}
+        </div>
+
+        <div class="timeline">
+          <div class="measure-grid" id="grid"></div>
+          <div class="playhead" id="playhead"></div>
+        </div>
+        <div class="status" id="status">Stopped — Step 1</div>
+      </section>
+
+      <script is:inline>
+        const eighthPixels = 48;
+        const angles = { '0':'-130deg','1':'-100deg','2':'-70deg','4':'0deg','8':'45deg','16':'90deg','-1':'130deg' };
+        const steps = [...document.querySelectorAll('.step')];
+        const align = document.querySelector('#align');
+        const grid = document.querySelector('#grid');
+        const playhead = document.querySelector('#playhead');
+        const status = document.querySelector('#status');
+        let running=false, timer=null, stepIndex=0, pos=0;
+
+        function renderGrid(){
+          grid.innerHTML='';
+          const length = Number(align.value);
+          for(let i=0;i<64;i++){
+            const tick=document.createElement('div');
+            tick.className='tick'+(i%length===0?' major':'');
+            tick.textContent=i%length===0 ? `BAR ${Math.floor(i/length)+1}` : '';
+            grid.appendChild(tick);
+          }
+        }
+        function refreshKnobs(){
+          steps.forEach(s=>{
+            const val=s.querySelector('select').value;
+            s.querySelector('.knob').style.setProperty('--angle', angles[val] || '0deg');
+          });
+        }
+        function next(){
+          if(!running) return;
+          const sel=steps[stepIndex].querySelector('select');
+          const v=Number(sel.value);
+          if(v===-1){
+            const measure=Number(align.value);
+            const nextBoundary=Math.ceil((pos+0.0001)/measure)*measure;
+            pos=nextBoundary;
+            status.textContent=`Step ${stepIndex+1}: ALIGN — waiting to measure boundary ${nextBoundary}/8`;
+          } else if(v===0){
+            status.textContent=`Step ${stepIndex+1}: SKIP`;
+          } else {
+            pos += v/4;
+            status.textContent=`Step ${stepIndex+1}: ${sel.options[sel.selectedIndex].text}`;
+          }
+          playhead.style.left=(pos*eighthPixels)+'px';
+          stepIndex=(stepIndex+1)%16;
+          timer=setTimeout(next, 280);
+        }
+        document.querySelector('#play').onclick=()=>{
+          running=!running;
+          document.querySelector('#play').textContent=running?'Pause':'Play';
+          if(running) next(); else clearTimeout(timer);
+        };
+        document.querySelector('#reset').onclick=()=>{
+          running=false; clearTimeout(timer); stepIndex=0; pos=0;
+          playhead.style.left='0px'; status.textContent='Stopped — Step 1';
+          document.querySelector('#play').textContent='Play';
+        };
+        align.onchange=renderGrid;
+        steps.forEach(s=>s.querySelector('select').onchange=refreshKnobs);
+        renderGrid(); refreshKnobs();
+      </script>
+    </main>
+  </body>
+</html>
