@@ -668,6 +668,23 @@ const timingValues = [
       .alt-control label{font-size:10px;font-weight:900;letter-spacing:.07em;text-transform:uppercase;color:#5b574e}
       .alt-control select{min-width:110px}
       .alt-hardware{display:flex;align-items:center;gap:10px}
+      .alt-row-hardware{display:grid;grid-template-columns:repeat(6,minmax(70px,1fr)) 96px;gap:8px;align-items:end;padding:10px 12px;border:1px solid #b9b5aa;background:#e9e6dc;min-width:760px}
+      .alt-row-switch{position:relative;text-align:center;padding:6px 3px 8px;border:1px solid transparent}
+      .alt-row-switch.selected{border:2px solid #171717;background:#fff}
+      .alt-row-switch .top,.alt-row-switch .bottom{display:block;font-size:10px;font-weight:800;line-height:1.1}
+      .alt-row-switch strong,.alt-row-encoder strong{display:block;margin-top:5px;font-size:10px;letter-spacing:.03em}
+      .mini-toggle{width:36px;height:54px;margin:4px auto;position:relative}
+      .mini-toggle .dot{position:absolute;left:12px;width:12px;height:12px;border:2px solid #777;border-radius:50%;background:#f8f7f2}
+      .mini-toggle .dot.top{top:0}.mini-toggle .dot.mid{top:20px}.mini-toggle .dot.bottom{bottom:0}
+      .mini-toggle .dot.active{background:#171717;border-color:#171717}
+      .mini-toggle .stick{position:absolute;left:16px;width:4px;height:29px;background:#171717;border-radius:3px;transform-origin:2px 24px}
+      .mini-toggle .stick.mid{top:12px;transform:rotate(0deg)}
+      .mini-toggle .stick.up{top:7px;transform:rotate(22deg)}
+      .alt-row-encoder{text-align:center;padding-bottom:8px}
+      .encoder-face{width:64px;height:64px;margin:0 auto;border:2px solid #171717;border-radius:50%;background:#242424;position:relative}
+      .encoder-face span{position:absolute;left:29px;top:6px;width:5px;height:24px;background:#fff;border-radius:2px;transform:rotate(8deg);transform-origin:2px 25px}
+      .alt-row-note{margin-top:8px;font-size:11px;line-height:1.45;color:#5b574e;max-width:780px}
+      @media(max-width:900px){.alt-row-hardware{overflow-x:auto;display:flex;align-items:flex-end}.alt-row-switch{min-width:78px}.alt-row-encoder{min-width:86px}}
       .alt-switch{width:44px;height:72px;position:relative}
       .alt-switch::before{content:'';position:absolute;left:20px;top:8px;width:4px;height:56px;border-radius:4px;background:#d3d0c7}
       .alt-switch .pos{position:absolute;left:15px;width:14px;height:14px;border:2px solid #858175;border-radius:50%;background:#fbfaf6}
@@ -904,15 +921,50 @@ const timingValues = [
           <div class="alt-toolbar">
             <div class="alt-controls">
               <div class="alt-control">
-                <label>OPTION switch</label>
-                <div class="alt-hardware">
-                  <div class="alt-switch" aria-label="Option switch in A position">
-                    <i class="pos a active"></i>
-                    <i class="pos b"></i>
-                    <i class="lever"></i>
+                <label>GLOBAL SWITCH ROW</label>
+                <div class="alt-row-hardware" aria-label="SAM-16 global switch row with Option switch in A position">
+                  <div class="alt-row-switch">
+                    <span class="top">Note</span>
+                    <div class="mini-toggle"><i class="dot top"></i><i class="dot mid active"></i><i class="dot bottom"></i><i class="stick mid"></i></div>
+                    <span class="bottom">var. / 16th</span>
+                    <strong>Clock</strong>
                   </div>
-                  <div class="alt-switch-labels"><span>A — alternating</span><span>B — normal</span></div>
+                  <div class="alt-row-switch">
+                    <span class="top">program</span>
+                    <div class="mini-toggle"><i class="dot top"></i><i class="dot mid active"></i><i class="dot bottom"></i><i class="stick mid"></i></div>
+                    <span class="bottom">chromatic</span>
+                    <strong>Scale</strong>
+                  </div>
+                  <div class="alt-row-switch selected">
+                    <span class="top">A</span>
+                    <div class="mini-toggle"><i class="dot top active"></i><i class="dot mid"></i><i class="dot bottom"></i><i class="stick up"></i></div>
+                    <span class="bottom">B</span>
+                    <strong>Option</strong>
+                  </div>
+                  <div class="alt-row-switch">
+                    <span class="top">run</span>
+                    <div class="mini-toggle"><i class="dot top"></i><i class="dot mid active"></i><i class="dot bottom"></i><i class="stick mid"></i></div>
+                    <span class="bottom">reset</span>
+                    <strong>M.Ch.</strong>
+                  </div>
+                  <div class="alt-row-switch">
+                    <span class="top">Row3</span>
+                    <div class="mini-toggle"><i class="dot top"></i><i class="dot mid active"></i><i class="dot bottom"></i><i class="stick mid"></i></div>
+                    <span class="bottom">Row4</span>
+                    <strong>Cont.</strong>
+                  </div>
+                  <div class="alt-row-switch">
+                    <span class="top">up</span>
+                    <div class="mini-toggle"><i class="dot top"></i><i class="dot mid active"></i><i class="dot bottom"></i><i class="stick mid"></i></div>
+                    <span class="bottom">down</span>
+                    <strong>Transp.</strong>
+                  </div>
+                  <div class="alt-row-encoder">
+                    <div class="encoder-face"><span></span></div>
+                    <strong>Encoder</strong>
+                  </div>
                 </div>
+                <div class="alt-row-note">To set Option A, briefly move the physical <strong>Option</strong> switch to <strong>A</strong>; with the switch in A, use the encoder to choose <strong>off or 1–15</strong>.</div>
               </div>
               <div class="alt-control">
                 <label for="altCount">ENCODER WITH OPTION A</label>
