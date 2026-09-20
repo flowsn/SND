@@ -1,0 +1,39 @@
+name: Deploy SAM-16 manual
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install site dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Install deployment dependency
+        run: python -m pip install paramiko
+
+      - name: Deploy to IONOS
+        env:
+          SFTP_HOST: ${{ secrets.IONOS_SFTP_HOST }}
+          SFTP_PORT: ${{ secrets.IONOS_SFTP_PORT }}
+          SFTP_USER: ${{ secrets.IONOS_SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.IONOS_SFTP_PASSWORD }}
+          SFTP_PATH: ${{ secrets.IONOS_DEPLOY_PATH }}
+        run: python scripts/deploy_sftp.py
