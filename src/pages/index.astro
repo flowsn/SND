@@ -204,12 +204,13 @@ const timingValues = [
         font-size:12px;
       }
       .timeline-scroll {
-        overflow-x:auto;
+        overflow:hidden;
         position:relative;
+        width:100%;
       }
       .timeline-stage {
         position:relative;
-        min-height:118px;
+        min-height:164px;
         width:100%;
       }
       .ruler {
@@ -245,8 +246,58 @@ const timingValues = [
         position:absolute;
         left:0;
         top:40px;
-        height:62px;
+        height:58px;
         width:100%;
+      }
+      .reference-track {
+        position:absolute;
+        left:0;
+        top:103px;
+        height:42px;
+        width:100%;
+        border-top:1px solid #c9c5b9;
+        background:rgba(245,243,236,.55);
+      }
+      .reference-label {
+        position:absolute;
+        left:8px;
+        top:4px;
+        z-index:3;
+        font-size:10px;
+        font-weight:800;
+        letter-spacing:.06em;
+        text-transform:uppercase;
+        background:#fbfaf6;
+        padding:0 4px;
+      }
+      .beat-pulse {
+        position:absolute;
+        top:19px;
+        width:2px;
+        height:13px;
+        background:#9f9b90;
+        transform:translateX(-1px);
+      }
+      .beat-pulse.quarter {
+        top:15px;
+        height:20px;
+        background:#5f5b51;
+      }
+      .beat-pulse.downbeat {
+        top:11px;
+        height:26px;
+        width:3px;
+        background:#222;
+      }
+      .bar-band {
+        position:absolute;
+        top:0;
+        bottom:0;
+        pointer-events:none;
+        z-index:0;
+      }
+      .bar-band.alt {
+        background:rgba(0,0,0,.028);
       }
       .segment {
         position:absolute;
@@ -381,9 +432,12 @@ const timingValues = [
             <span id="measureInfo">Align = 8/8</span>
           </div>
           <div class="timeline-scroll" id="timelineScroll">
-            <div class="timeline-stage" id="timelineStage" aria-label="SAM step timing over two Align measures">
+            <div class="timeline-stage" id="timelineStage" aria-label="SAM step timing over four measures with straight reference grid">
               <div class="ruler" id="ruler"></div>
               <div class="sequence-track" id="sequenceTrack"></div>
+              <div class="reference-track" id="referenceTrack">
+                <span class="reference-label">STRAIGHT 16TH GRID</span>
+              </div>
               <div class="playhead" id="playhead"></div>
             </div>
           </div>
@@ -391,7 +445,7 @@ const timingValues = [
         </div>
 
         <p class="microcopy">
-          Drag a Row 3 knob up or down to move through its detents. Arrow keys work when a knob is focused. The timeline redraws immediately.
+          Drag a Row 3 knob up or down to move through its detents. The upper lane shows the SAM timing; the straight 16th grid underneath stays fixed, so drift and ALIGN are visible immediately.
         </p>
       </section>
 
@@ -400,7 +454,7 @@ const timingValues = [
         let pxPerEighth = 48;
 
         function horizonEighths() {
-          return Number(align.value) * 2;
+          return Number(align.value) * 4;
         }
         const angleMap = {
           '0':'-130deg',
@@ -421,6 +475,7 @@ const timingValues = [
         const status = document.querySelector('#status');
         const measureInfo = document.querySelector('#measureInfo');
         const timelineScroll = document.querySelector('#timelineScroll');
+        const referenceTrack = document.querySelector('#referenceTrack');
 
         let running = false;
         let timer = null;
@@ -480,12 +535,21 @@ const timingValues = [
 
         function renderRuler() {
           ruler.innerHTML = '';
+          [...stage.querySelectorAll('.bar-band')].forEach(el => el.remove());
           const measure = Number(align.value);
           const horizon = horizonEighths();
-          const available = Math.max(640, timelineScroll.clientWidth || 640);
+          const available = Math.max(1, timelineScroll.clientWidth || stage.parentElement.clientWidth || 1);
           pxPerEighth = available / horizon;
-          stage.style.width = available + 'px';
-          measureInfo.textContent = `2 measures · Align = ${measure}/8`;
+          stage.style.width = '100%';
+          measureInfo.textContent = `4 measures · Align = ${measure}/8`;
+
+          for (let bar = 0; bar < 4; bar++) {
+            const band = document.createElement('div');
+            band.className = 'bar-band' + (bar % 2 ? ' alt' : '');
+            band.style.left = ((bar * measure) * pxPerEighth) + 'px';
+            band.style.width = (measure * pxPerEighth) + 'px';
+            stage.insertBefore(band, ruler);
+          }
 
           for (let i = 0; i <= horizon; i++) {
             const line = document.createElement('div');
@@ -539,6 +603,23 @@ const timingValues = [
           return result;
         }
 
+        function renderReference() {
+          [...referenceTrack.querySelectorAll('.beat-pulse')].forEach(el => el.remove());
+          const horizon = horizonEighths();
+          const measure = Number(align.value);
+          const sixteenthCount = Math.round(horizon * 2);
+
+          for (let i = 0; i <= sixteenthCount; i++) {
+            const p = i / 2;
+            const pulse = document.createElement('i');
+            const isDownbeat = Math.abs(p % measure) < 0.000001;
+            const isQuarter = i % 2 === 0;
+            pulse.className = 'beat-pulse' + (isQuarter ? ' quarter' : '') + (isDownbeat ? ' downbeat' : '');
+            pulse.style.left = (p * pxPerEighth) + 'px';
+            referenceTrack.appendChild(pulse);
+          }
+        }
+
         function renderSequence() {
           sequenceTrack.innerHTML = '';
           const segments = computeSegments();
@@ -568,6 +649,7 @@ const timingValues = [
           refreshKnobs();
           renderRuler();
           renderSequence();
+          renderReference();
         }
 
         function clearActive() {
