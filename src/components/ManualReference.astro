@@ -2,6 +2,8 @@
 import { chapters } from '../data/manual';
 import { guides } from '../data/guides';
 import PanelLocator from './PanelLocator.astro';
+import PositionText from './PositionText.astro';
+import ConnectionMap from './ConnectionMap.astro';
 import CompactRows from './CompactRows.astro';
 ---
 <nav class="manual-nav card" aria-label="Handbuch / Manual">
@@ -15,24 +17,25 @@ import CompactRows from './CompactRows.astro';
   {chapters.map(chapter => <section class="card reference-chapter" id={chapter.id}>
     {[0, 1].map(language => <div class={language === 0 ? 'lang-de language-block' : 'lang-en language-block'} lang={language === 0 ? 'de' : 'en'}>
       <h2>{chapter.title[language]}</h2>
-      {!['pitch','velocity','global-controls'].includes(chapter.id) && <p class="guide-intro">{guides[chapter.id].intro[language]}</p>}
-      {(guides[chapter.id].rows || guides[chapter.id].globals) && <PanelLocator chapter={chapter.id} rows={guides[chapter.id].rows} globals={guides[chapter.id].globals} language={language} firstStep={chapter.id === 'scale-reference'} />}
-      {['pitch','velocity','global-controls'].includes(chapter.id) ? <CompactRows chapter={chapter.id} language={language}/> : <>
+      {chapter.id === 'modulation-outputs' && <ConnectionMap language={language}/>}
+      {!['pitch','velocity','global-controls','modulation-outputs'].includes(chapter.id) && <p class="guide-intro"><PositionText text={guides[chapter.id].intro[language]}/></p>}
+      {(guides[chapter.id]?.rows || guides[chapter.id]?.globals) && <PanelLocator chapter={chapter.id} rows={guides[chapter.id].rows} globals={guides[chapter.id].globals} language={language} firstStep={chapter.id === 'scale-reference'} />}
+      {['pitch','velocity','global-controls','modulation-outputs'].includes(chapter.id) ? <CompactRows chapter={chapter.id} language={language}/> : <>
       <h3>{language === 0 ? 'Welches Bedienelement?' : 'Which control?'}</h3>
-      <p>{guides[chapter.id].find[language]}</p>
+      <p><PositionText text={guides[chapter.id].find[language]}/></p>
       <h3>{language === 0 ? 'So gehst du vor' : 'Try this'}</h3>
-      <ol class="recipe-steps">{guides[chapter.id].actions.map(action=><li>{action[language]}</li>)}</ol>
-      <div class="guide-result"><h3>{language === 0 ? 'Das passiert' : 'What changes'}</h3><p>{guides[chapter.id].result[language]}</p></div>
+      <ol class="recipe-steps">{guides[chapter.id].actions.map(action=><li><PositionText text={action[language]}/></li>)}</ol>
+      <div class="guide-result"><h3>{language === 0 ? 'Das passiert' : 'What changes'}</h3><p><PositionText text={guides[chapter.id].result[language]}/></p></div>
       <nav class="related-links" aria-label={language === 0 ? 'Passende Anleitungen' : 'Related instructions'}>{guides[chapter.id].links.map(link=><a href={`#${link.to}`}>{link.label[language]}</a>)}</nav>
       </>}
       <details class="technical-details">
       <summary>{language === 0 ? 'Genauer nachlesen: Verhalten & technische Details' : 'Read more: behavior & technical details'}</summary>
-      {chapter.paragraphs.map(paragraph => <p>{paragraph[language]}</p>)}
-      {chapter.steps && <ol class="recipe-steps">{chapter.steps.map(step => <li>{step[language]}</li>)}</ol>}
+      {chapter.paragraphs.map(paragraph => <p><PositionText text={paragraph[language]}/></p>)}
+      {chapter.steps && <ol class="recipe-steps">{chapter.steps.map(step => <li><PositionText text={step[language]}/></li>)}</ol>}
       </details>
       {chapter.headers && chapter.rows && <div class="reference-table" tabindex="0" role="region" aria-label={chapter.title[language]}><table>
         <thead><tr>{chapter.headers.map(header => <th scope="col">{header[language]}</th>)}</tr></thead>
-        <tbody>{chapter.rows.map(row => <tr>{row.map((cell, index) => index === 0 ? <th scope="row">{cell[language]}</th> : <td>{cell[language]}</td>)}</tr>)}</tbody>
+        <tbody>{chapter.rows.map(row => <tr>{row.map((cell, index) => index === 0 ? <th scope="row"><PositionText text={cell[language]}/></th> : <td><PositionText text={cell[language]}/></td>)}</tr>)}</tbody>
       </table></div>}
       <p class="source-note">{language === 0 ? 'Grundlage: deutsche Originalanleitung, Software 2.05 · Abschnitte ' : 'Based on the original German manual, software 2.05 · sections '}{chapter.source}</p>
       <a class="back-top" href="#manual-top">{language === 0 ? '↑ Zur Übersicht' : '↑ Back to contents'}</a>

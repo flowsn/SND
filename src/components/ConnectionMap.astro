@@ -1,0 +1,28 @@
+---
+import ControlSymbol from './ControlSymbol.astro';
+const { language = 0 } = Astro.props;
+const rows = ['pitch','velocity'];
+---
+<figure class="connection-figure"><div class="connection-map">
+      <strong>{language === 0 ? 'Vorderseite · unterste Reihe, links ↙' : 'Front panel · bottom row, left ↙'}</strong>
+      <div class="connection-groups">{['pitch','velocity'].map((row,i)=><div class:list={['connection-group',{'connection-active':rows.includes(row)}]}>
+        <span class="connection-name">{i+1} · {i === 0 ? 'Pitch' : 'Velocity'}</span>
+        <div class="connection-item tone-knob"><ControlSymbol kind="knob"/><span>{language === 0 ? 'Add-In-Regler' : 'Add In control'}</span></div>
+        <div class="connection-item tone-socket"><ControlSymbol kind="socket"/><strong>{i+1} · Add In</strong></div>
+        <div class="connection-item tone-socket"><ControlSymbol kind="socket"/><strong>{i+1} · Out</strong></div>
+      </div>)}</div>
+      {true && <div class="rear-connection tone-socket"><ControlSymbol kind="socket"/><div><strong>MIDI Out</strong><br/>{language === 0 ? 'Rückseite · separat von den CV-Buchsen' : 'Rear panel · separate from the CV sockets'}</div></div>}
+    </div></figure>
+<style>
+.connection-figure {margin:1.4rem 0;padding:16px;background:#f2f0e8;border:1px solid #d9d3c6;border-radius:10px;}
+.tone-knob {--control-fill:#e7f0fb;--control-edge:#3677b5;}
+  .connection-map {margin-top:16px;font-size:11px;}
+  .connection-groups {display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .connection-group {display:grid;grid-template-columns:repeat(3,1fr);gap:5px;border:1px solid #aaa69b;border-radius:5px;padding:7px;opacity:.4;}
+  .connection-active {opacity:1;border:2px solid #66645e;}
+  .connection-name {grid-column:1/-1;font-weight:750;}
+  .connection-item {display:flex;flex-direction:column;align-items:center;gap:5px;padding:7px;background:var(--control-fill);border:1px solid var(--control-edge);border-radius:4px;}
+  .tone-socket {--control-fill:#f5f4f0;--control-edge:#88847b;}
+  .rear-connection {display:flex;align-items:center;gap:10px;border:1px dashed var(--control-edge);background:var(--control-fill);padding:8px;margin-top:10px;width:fit-content;}
+
+</style>

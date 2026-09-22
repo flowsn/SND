@@ -1,0 +1,6 @@
+---
+const { text = '' } = Astro.props;
+const pattern = /\b(oben|unten|Mitte|Mittelstellung|up|down|middle|center|centre)\b/gi;
+const parts = String(text).split(pattern);
+---
+{parts.map((part, i) => i % 2 ? <strong>{part}</strong> : part)}
