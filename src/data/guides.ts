@@ -5,17 +5,6 @@ export type Guide = {
   actions: Text[]; result: Text; links: Link[];
 };
 export const guides: Record<string, Guide> = {
-  connections: {
-    intro: ['Zuerst einen Klang anschließen. MIDI und die analogen Buchsen sind zwei verschiedene Wege zum Synthesizer.', 'Start by connecting a sound. MIDI and the analog sockets are two different ways to reach your synthesizer.'],
-    find: ['MIDI In, Out und Thru sitzen hinten. Die Buchsen für Tonhöhe und Gate sitzen auf der Vorderseite.', 'MIDI In, Out and Thru are on the back. The pitch and gate sockets are on the front.'],
-    actions: [
-      ['Für MIDI: SAM MIDI Out mit dem Synthesizer verbinden. Den Synthesizer auf denselben MIDI-Kanal wie den SAM einstellen.', 'For MIDI: connect SAM MIDI Out to your synth. Set the synth to the same MIDI channel as the SAM.'],
-      ['Für eine analoge Stimme: 1-Pitch Out an den Tonhöheneingang, Gate Out an den Gate-/Trigger-Eingang anschließen. Vorher prüfen: Der Empfänger muss mit 1 V/Oktave und +12 V Gate zurechtkommen.', 'For an analog voice: connect 1-Pitch Out to pitch and Gate Out to the gate/trigger input. First check that the receiver supports 1 V/octave and a +12 V gate.'],
-      ['Für externe MIDI-Clock: Den MIDI-Ausgang des Taktgebers mit SAM MIDI In verbinden. MIDI Thru kopiert diesen Eingang; die SAM-Sequenz kommt aus MIDI Out.', 'For external MIDI clock: connect the clock source’s MIDI output to SAM MIDI In. MIDI Thru copies this input; the SAM’s own sequence comes from MIDI Out.']
-    ],
-    result: ['Der Synthesizer empfängt die gespielten Schritte. Wenn nichts klingt, zuerst MIDI-Kanal, Trigger-Schalter und Taktquelle prüfen.', 'The synth receives the played steps. If it stays silent, first check the MIDI channel, trigger switches and clock source.'],
-    links: [{to:'midi-channel',label:['MIDI-Kanal einstellen','Set the MIDI channel']},{to:'timing-sync',label:['Taktquelle wählen','Choose a clock source']},{to:'analog-reference',label:['Anschlusspegel prüfen','Check connection levels']}]
-  },
   pitch: {
     intro: ['Mit dem Pitch-Knopf bestimmst du, welcher Ton in einem Schritt gespielt wird.', 'Use the Pitch knob to choose the note played at a step.'],
     find: ['Suche die oberste Reihe der großen Drehknöpfe, direkt unter den Trigger/Reset-Schaltern. Das sind die 16 Pitch-Knöpfe: einer pro Schritt. Der kleine Schalter direkt unter jedem Pitch-Knopf verschiebt dessen Ton nach oben oder unten.', 'Find the top row of large knobs, directly below the Trigger/Reset switches. These are the 16 Pitch knobs: one for each step. The small switch immediately below each Pitch knob shifts that step’s note up or down.'],
@@ -178,7 +167,7 @@ export const guides: Record<string, Guide> = {
     find:['Die Links führen direkt zur jeweiligen Bedienfolge mit markierten Bedienelementen.', 'The links take you directly to the relevant procedure and highlighted controls.'],
     actions:[['Zuerst einen einzelnen Klang zuverlässig zum Spielen bringen. Danach Akkorde, einen zweiten Synthesizer oder Modulation hinzufügen.', 'First get one sound playing reliably. Then add chords, a second synth or modulation.']],
     result:['Du kannst jede Ebene einzeln hören und prüfen, bevor die nächste dazukommt.', 'You can hear and check each layer before adding the next.'],
-    links:[{to:'connections',label:['Einen Synth anschließen','Connect a synth']},{to:'scale-reference',label:['Einen Akkord speichern','Store a chord']},{to:'velocity',label:['Zwei Synths steuern','Control two synths']},{to:'io',label:['Schrittweise Modulation patchen','Patch step-selective modulation']}]
+    links:[{to:'scale-reference',label:['Einen Akkord speichern','Store a chord']},{to:'velocity',label:['Zwei Synths steuern','Control two synths']},{to:'io',label:['Schrittweise Modulation patchen','Patch step-selective modulation']}]
   },
   verification: {
     intro:['Einige Details bleiben offen. Hier stehen konkrete Versuche, mit denen du sie am SAM prüfen kannst.', 'Some details remain open. Here are concrete tests you can perform on the SAM.'],
@@ -192,6 +181,6 @@ export const guides: Record<string, Guide> = {
     find:['Alle analogen Buchsen sind vorne am Gerät. MIDI und Netzteil werden hinten angeschlossen.', 'All analog sockets are on the front. MIDI and the power supply connect on the back.'],
     actions:[['Vor dem Patchen den Anschlussnamen in der Tabelle suchen und den zulässigen Bereich des angeschlossenen Geräts vergleichen.', 'Before patching, find the socket name in the table and compare it with the connected device’s supported range.']],
     result:['Besonders beachten: Gate Out liefert +12 V. Die einzelnen I/O4-B-Buchsen der Schritte 3–16 besitzen laut Quelle keinen Überspannungsschutz.', 'In particular: Gate Out delivers +12 V. The individual I/O4 B sockets for steps 3–16 have no overvoltage protection according to the source.'],
-    links:[{to:'connections',label:['Zum Anschlussbeispiel','Go to the connection example']},{to:'xfader',label:['Mit Xfader mischen','Mix with Xfader']},{to:'io',label:['Mit I/O schalten','Switch with I/O']}]
+    links:[{to:'xfader',label:['Mit Xfader mischen','Mix with Xfader']},{to:'io',label:['Mit I/O schalten','Switch with I/O']}]
   }
 };

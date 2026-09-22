@@ -7,7 +7,7 @@ import CompactRows from './CompactRows.astro';
 <nav class="manual-nav card" aria-label="Handbuch / Manual">
   <h2><span class="lang-de">Handbuch & Praxis</span><span class="lang-en">Reference & workflows</span></h2>
   <p><span class="lang-de">Bedienelement finden. Etwas ausprobieren. Das Ergebnis hören. Wähle ein Thema oder beginne mit einem dieser Abläufe.</span><span class="lang-en">Find the control. Try it. Hear what changes. Choose a topic or start with one of these tasks.</span></p>
-  <div class="task-links"><a href="#connections"><span class="lang-de">Einen Synth anschließen</span><span class="lang-en">Connect a synth</span></a><a href="#pitch"><span class="lang-de">Eine Melodie einstellen</span><span class="lang-en">Set the notes</span></a><a href="#scale-reference"><span class="lang-de">Einen MIDI-Akkord speichern</span><span class="lang-en">Store a MIDI chord</span></a><a href="#timing-sync"><span class="lang-de">Den Rhythmus verändern</span><span class="lang-en">Change the rhythm</span></a></div>
+  <div class="task-links"><a href="#pitch"><span class="lang-de">Eine Melodie einstellen</span><span class="lang-en">Set the notes</span></a><a href="#scale-reference"><span class="lang-de">Einen MIDI-Akkord speichern</span><span class="lang-en">Store a MIDI chord</span></a><a href="#timing-sync"><span class="lang-de">Den Rhythmus verändern</span><span class="lang-en">Change the rhythm</span></a></div>
   <ol>{chapters.map(chapter => <li><a href={`#${chapter.id}`}><span class="lang-de">{chapter.title[0]}</span><span class="lang-en">{chapter.title[1]}</span></a></li>)}</ol>
   <p class="demo-links"><strong><span class="lang-de">Interaktive Beispiele:</span><span class="lang-en">Interactive examples:</span></strong> <a href="#timingDemo">Timing + ALIGN</a> · <a href="#chordProgramming"><span class="lang-de">Akkorde</span><span class="lang-en">Chords</span></a> · <a href="#optionA">Option A</a></p>
 </nav>
@@ -15,9 +15,9 @@ import CompactRows from './CompactRows.astro';
   {chapters.map(chapter => <section class="card reference-chapter" id={chapter.id}>
     {[0, 1].map(language => <div class={language === 0 ? 'lang-de language-block' : 'lang-en language-block'} lang={language === 0 ? 'de' : 'en'}>
       <h2>{chapter.title[language]}</h2>
-      {!['pitch','velocity'].includes(chapter.id) && <p class="guide-intro">{guides[chapter.id].intro[language]}</p>}
+      {!['pitch','velocity','global-controls'].includes(chapter.id) && <p class="guide-intro">{guides[chapter.id].intro[language]}</p>}
       {(guides[chapter.id].rows || guides[chapter.id].globals) && <PanelLocator rows={guides[chapter.id].rows} globals={guides[chapter.id].globals} language={language} firstStep={chapter.id === 'scale-reference'} />}
-      {['pitch','velocity'].includes(chapter.id) ? <CompactRows chapter={chapter.id} language={language}/> : <>
+      {['pitch','velocity','global-controls'].includes(chapter.id) ? <CompactRows chapter={chapter.id} language={language}/> : <>
       <h3>{language === 0 ? 'Welches Bedienelement?' : 'Which control?'}</h3>
       <p>{guides[chapter.id].find[language]}</p>
       <h3>{language === 0 ? 'So gehst du vor' : 'Try this'}</h3>

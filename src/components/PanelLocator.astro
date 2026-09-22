@@ -37,9 +37,9 @@ const globalControls = [
       </div>)}</div>
       {rows.includes('pitch') && <div class="rear-connection tone-socket"><ControlSymbol kind="socket"/><div><strong>MIDI Out</strong><br/>{language === 0 ? 'Rückseite · separat von den CV-Buchsen' : 'Rear panel · separate from the CV sockets'}</div></div>}
     </div>}
-    <div class="panel-global-caption">{language === 0 ? 'Globale Bedienelemente · unten rechts ↘' : 'Global controls · bottom right ↘'}</div>
+    <div class="panel-global-caption">{language === 0 ? 'Globale Bedienelemente · unten rechts ↘ · obere / untere Stellung' : 'Global controls · bottom right ↘ · upper / lower positions'}</div>
     <div class="scroll-hint">{language === 0 ? '↔ Schalterreihe seitlich verschieben' : '↔ Scroll the switch row sideways'}</div>
-    <div class="global-scroll"><div class="panel-globals">{globalControls.map(control=><div class:list={['global-cell',control.name === 'Encoder' ? 'tone-knob' : 'tone-global',{'target-control':globals.includes(control.name)}]}><span class="position-label">{control.up}</span><div class="switch-drawing">{control.middle && <small>{control.middle}</small>}<ControlSymbol kind={control.name === 'Encoder' ? 'knob' : 'switch'} scope="global"/></div><span class="position-label">{control.down || '\u00a0'}</span><strong>{control.name}</strong></div>)}</div></div>
+    <div class="global-scroll"><div class="panel-globals">{globalControls.map(control=><div class:list={['global-cell',control.name === 'Encoder' ? 'tone-knob' : 'tone-global',{'target-control':globals.includes(control.name)}]}>{control.name === 'Encoder' ? <><span class="position-label">{control.up}</span><ControlSymbol kind="knob"/></> : <><div class="switch-position"><ControlSymbol kind="switch" scope="global" position="up"/><span>↑ {control.up}</span></div><div class="switch-position"><ControlSymbol kind="switch" scope="global" position="down"/><span>↓ {control.down}</span></div>{control.middle && <small>{language === 0 ? 'Mitte: ' : 'Middle: '}{control.middle}</small>}</>}<strong>{control.name}</strong></div>)}</div></div>
   </div>
   <div class="panel-key"><span><ControlSymbol kind="knob"/> {language === 0 ? 'Drehknopf' : 'Knob'}</span><span><ControlSymbol kind="switch"/> {language === 0 ? 'Schritt-Schalter' : 'Step switch'}</span><span><ControlSymbol kind="switch" scope="global"/> {language === 0 ? 'Globaler Schalter' : 'Global switch'}</span><span><ControlSymbol kind="socket"/> {language === 0 ? 'Buchse' : 'Socket'}</span></div>
   {firstStep && <p class="panel-key">{language === 0 ? 'Zum Programmieren nur Pitch von Schritt 1 benutzen.' : 'For programming, use only the step 1 Pitch knob.'}</p>}
@@ -78,7 +78,7 @@ const globalControls = [
   .global-scroll {overflow-x:auto;padding:2px;}
   .panel-globals {display:grid; grid-template-columns:repeat(7,1fr); gap:5px; margin-left:auto; width:540px;}
   .global-cell {display:flex; align-items:center; flex-direction:column; gap:4px; padding:8px 2px; border-radius:4px; font-size:11px;}
-  .switch-drawing {position:relative;}
+  .switch-position {display:flex;align-items:center;flex-direction:column;gap:2px;}
   .switch-drawing small {position:absolute;right:26px;top:7px;font-size:10px;}
   .position-label {font-size:11px;min-height:13px;}
   .panel-key {font-size:.75rem; color:#5b584e; margin:12px 0 0;display:flex;flex-wrap:wrap;gap:6px 15px;}

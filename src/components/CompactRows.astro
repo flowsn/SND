@@ -4,7 +4,11 @@ const { chapter, language = 0 } = Astro.props;
 const de = language === 0;
 ---
 <ul class="control-bullets">
-  {chapter === 'pitch' ? <>
+  {chapter === 'global-controls' ? <>
+    <li class="tone-global"><ControlSymbol kind="switch" scope="global" position="up"/><div><strong>Transp. ↑ up → Encoder → Transpose ↑</strong><br/>{de ? 'Transp. unten rechts auf up stellen. Der Encoder programmiert jetzt die Aufwärts-Transponierung: 0–15 Halbtöne für alle Schritte, deren Transpose-Schalter unter Pitch auf ↑ steht.' : 'Set Transp. at the bottom right to up. The encoder now sets the upward transposition: 0–15 semitones for every step whose Transpose switch below Pitch is set to ↑.'}</div></li>
+    <li class="tone-global"><ControlSymbol kind="switch" scope="global" position="down"/><div><strong>Transp. ↓ down → Encoder → Transpose ↓</strong><br/>{de ? 'Transp. auf down stellen. Der Encoder programmiert jetzt die Abwärts-Transponierung: 0–15 Halbtöne für alle Schritte mit Transpose auf ↓. Der up-Wert bleibt separat gespeichert.' : 'Set Transp. to down. The encoder now sets the downward transposition: 0–15 semitones for every step with Transpose set to ↓. The up value remains stored separately.'}</div></li>
+    <li class="tone-knob"><ControlSymbol kind="knob"/><div><strong>{de ? 'Wertübernahme & Beispiel' : 'Value entry & example'}</strong><br/>{de ? 'Beim Umschalten aus der Mitte übernimmt Transp. sofort den vorhandenen Encoderwert. Beispiel: up = 12, down = 7 → Schritt-Schalter ↑: +12 Halbtöne; Mitte: unverändert; ↓: −7 Halbtöne. Danach Transp. wieder in die Mitte stellen, um andere globale Parameter einzustellen.' : 'When moved out of the middle, Transp. immediately adopts the current encoder value. Example: up = 12, down = 7 → step switch ↑: +12 semitones; middle: unchanged; ↓: −7 semitones. Return Transp. to the middle before editing other global parameters.'} <a href="#pitch">Pitch →</a></div></li>
+  </> : chapter === 'pitch' ? <>
     <li class="tone-knob"><ControlSymbol kind="knob"/><div><strong>Pitch</strong> <span class="control-place">{de ? 'oberste Knopfreihe' : 'top knob row'}</span><br/>{de ? 'Chromatisch: 12 Uhr = C, nächste Position = Cis. Programmierte Scale: jede Position wählt eine gespeicherte Note oder einen Akkord.' : 'Chromatic: 12 o’clock = C, next position = C-sharp. Programmed Scale: each position selects a stored note or chord.'} <a href="#scale-reference">{de ? 'Akkorde programmieren →' : 'Program chords →'}</a></div></li>
     <li class="tone-step"><ControlSymbol kind="switch"/><div><strong>Transpose ↑ / ↓</strong> <span class="control-place">{de ? 'direkt unter Pitch' : 'directly below Pitch'}</span><br/>{de ? 'Mitte: keine Verschiebung. Oben/unten: Tonhöhe um das jeweilige Intervall versetzen; up und down sind getrennt von 0–15 Halbtönen einstellbar.' : 'Middle: no shift. Up/down: shift pitch by the corresponding interval; up and down are separately adjustable from 0–15 semitones.'} <a href="#global-controls">Transp. →</a></div></li>
     <li class="tone-global"><ControlSymbol kind="switch" scope="global"/><div><strong>Scale</strong> <span class="control-place">{de ? 'global · unten rechts' : 'global · bottom right'}</span><br/>{de ? 'Unten: chromatic. Mitte: programmierte Belegung. Oben: program, nur im Stand. Die Belegung gilt für alle 16 Pitch-Knöpfe.' : 'Down: chromatic. Middle: programmed map. Up: program, while stopped only. The map applies to all 16 Pitch knobs.'}</div></li>
@@ -21,12 +25,12 @@ const de = language === 0;
 {chapter === 'velocity' && <p class="compact-example"><strong>Dual / X-fade:</strong> {de ? 'Basis-Kanal = Akkord · zweiter Kanal = zuerst eingegebene Note.' : 'Base channel = chord · second channel = first-entered note.'} <a href="#scale-reference">{de ? 'Akkord-Eingabe →' : 'Chord entry →'}</a></p>}
 <style>
   .control-bullets {list-style:none;padding:0;margin:1rem 0;}
-  .control-bullets li {display:flex;align-items:flex-start;gap:12px;padding:14px;margin-bottom:10px;border:1px solid var(--control-edge);border-left-width:4px;border-radius:6px;background:var(--control-fill);line-height:1.55;font-size:.96rem;}
+  .control-bullets li {display:flex;align-items:flex-start;gap:12px;padding:12px 0;margin-bottom:4px;border-bottom:1px solid #e2dfd7;background:transparent;line-height:1.55;font-size:.96rem;}
   .tone-knob {--control-fill:#e7f0fb;--control-edge:#3677b5;}
   .tone-step {--control-fill:#fff0da;--control-edge:#b56b18;}
   .tone-global {--control-fill:#dcf2d2;--control-edge:#478438;}
   .tone-socket {--control-fill:#f5f4f0;--control-edge:#88847b;}
-  .control-bullets li > :global(svg) {margin-top:1px;}
+  .control-bullets li > :global(svg) {margin-top:1px;padding:8px;box-sizing:content-box;border:1px solid var(--control-edge);border-radius:4px;background:var(--control-fill);}
   .control-bullets strong {font-weight:750;}
   .control-place {font-size:.8rem;color:#666158;margin-left:8px;}
   .compact-example {padding:12px 15px;background:#edf3f8;border-left:3px solid #2867a0;font-size:.94rem;}

@@ -4,14 +4,6 @@ type Pair = [string, string];
 type Chapter = { id: string; title: Pair; source: string; paragraphs: Pair[]; headers?: Pair[]; rows?: Pair[][]; steps?: Pair[] };
 export const chapters: Chapter[] = [
   {
-    id: 'connections', title: ['Anschließen & Orientierung', 'Connections & orientation'], source: '1, 2, 9',
-    paragraphs: [
-      ['Dieses Handbuch beschreibt die Software-Version 2.05. MIDI In empfängt Takt, Programmiernoten und gegebenenfalls Fernsteuerung; MIDI Out liefert die erzeugten Daten. MIDI Thru ist eine aufbereitete Hardware-Kopie des Eingangs, kein zweiter Ausgang der erzeugten Sequenz.', 'This manual describes software version 2.05. MIDI In receives clock, programming notes and, when enabled, remote commands; MIDI Out carries the generated data. MIDI Thru is a buffered hardware copy of the input, not a second output of the generated sequence.'],
-      ['Für eine analoge Stimme: 1-Pitch Out an den Tonhöheneingang, Gate Out an den Hüllkurven-Trigger. Pitch Out arbeitet mit 1 V/Oktave und 0–5 V; Gate Out liefert +12 V. Die Kompatibilität des Empfängers prüfen; Schalt-Trigger benötigen eine passende Anpassung. Nur das vorgesehene Wechselspannungs-Netzteil verwenden.', 'For an analog voice: connect 1-Pitch Out to pitch and Gate Out to the envelope trigger. Pitch Out uses 1 V/octave over 0–5 V; Gate Out is +12 V. Check the receiving equipment’s compatibility; switched-trigger inputs require suitable adaptation. Use the specified AC power supply.'],
-      ['Die oberste Schalterreihe wählt Trigger (unten) und Reset-Endpunkte (oben). Mehrere Reset-Punkte dürfen gesetzt sein. Die vier Schrittparameter heißen Pitch, Velocity, Xfader und I/O; globale Einstellungen gelten für alle 16 Schritte.', 'The top switch row selects triggers (down) and reset endpoints (up). Multiple reset points may be set. The four step parameters are Pitch, Velocity, Xfader and I/O; global settings apply to all 16 steps.']
-    ]
-  },
-  {
     id: 'pitch', title: ['1 · Pitch — Tonhöhe & Transposition', '1 · Pitch — notes & transposition'], source: '2.1, 3.1, 3.6',
     paragraphs: [
       ['Jeder Schritt hat einen Pitch-Knopf in der obersten Knopfreihe und einen Transpose-Schalter direkt darunter. In der chromatischen Belegung ist 12 Uhr C, 1 Uhr Cis usw. In der programmierten Belegung enthält jede Position eine Note oder einen Akkord mit bis zu sieben Stimmen. Diese Belegung wird von allen Schritten verwendet.', 'Each step has a Pitch knob in the top knob row and a transpose switch directly below it. In the chromatic map, 12 o’clock is C, 1 o’clock C-sharp, and so on. In the programmed map, each position holds a note or a chord of up to seven voices. All steps share that map.'],
