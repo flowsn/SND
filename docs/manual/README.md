@@ -1,6 +1,10 @@
 # SAM-16 Manual — Working Chapters
 
-These files are the current source chapters for the rewritten manual.
+The published bilingual reference is now maintained in `src/data/manual.ts` and
+rendered on the home page. See [source policy and coverage](SOURCE-POLICY.md).
+The Markdown chapters below are earlier supporting drafts, not the source of the
+published reference. Their field-workflow claims must be checked against the
+original German manual before being promoted into hardware reference text.
 
 ## Updated from original manual + field workflow transcripts
 

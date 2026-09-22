@@ -1,4 +1,5 @@
 ---
+import ManualReference from '../components/ManualReference.astro';
 const timingValues = [
   { label: 'SKIP', eighths: 0 },
   { label: '1/32', eighths: 0.25 },
@@ -762,9 +763,11 @@ const timingValues = [
         </select>
       </div>
       <h1><span class="lang-de">SND SAM-16 Online-Handbuch</span><span class="lang-en">SND SAM-16 Online Manual</span></h1>
-      <p><span class="lang-de">Interaktiver Dokumentations-Prototyp.</span><span class="lang-en">Interactive documentation prototype.</span></p>
+      <p id="manual-top"><span class="lang-de">Referenz, Praxisabläufe und interaktive Beispiele nach der deutschen Originalanleitung.</span><span class="lang-en">Reference, workflows and interactive examples based on the original German manual.</span></p>
 
-      <section class="card">
+      <ManualReference />
+
+      <section class="card" id="timingDemo">
         <h2><span class="lang-de">Variable Zeitsteuerung + ALIGN</span><span class="lang-en">Variable Timing + ALIGN</span></h2>
         <p class="note">
           <span class="lang-de">Im <strong>var.</strong>-Modus bestimmt <strong>Reihe 3</strong> die Dauer jedes Schritts.
@@ -1019,13 +1022,13 @@ const timingValues = [
                     <strong>Encoder</strong>
                   </div>
                 </div>
-                <div class="alt-row-note"><span class="lang-de"><strong>Programmier-Geste:</strong> den physischen <strong>Option</strong>-Schalter kurz in Stellung <strong>A</strong> bringen/halten, mit dem Encoder <strong>off oder 1–15</strong> wählen und den Schalter anschließend in die <strong>neutrale Mittelstellung</strong> zurückkehren lassen. Danach verändert das Drehen des Encoders allein Option A nicht.</span><span class="lang-en"><strong>Programming gesture:</strong> briefly move/hold the physical <strong>Option</strong> switch in <strong>A</strong>, turn the encoder to choose <strong>off or 1–15</strong>, then let the switch return to the <strong>middle neutral position</strong>. After that, turning the encoder alone does not change Option A.</span></div>
+                <div class="alt-row-note"><span class="lang-de"><strong>Programmier-Geste:</strong> den physischen <strong>Option</strong>-Schalter kurz in Stellung <strong>A</strong> bringen/halten, mit dem Encoder <strong>off oder 1–15</strong> wählen und den Schalter anschließend in die <strong>neutrale Mittelstellung</strong> zurückstellen. Danach verändert das Drehen des Encoders allein Option A nicht.</span><span class="lang-en"><strong>Programming gesture:</strong> briefly move/hold the physical <strong>Option</strong> switch in <strong>A</strong>, turn the encoder to choose <strong>off or 1–15</strong>, then return the switch to the <strong>middle neutral position</strong>. After that, turning the encoder alone does not change Option A.</span></div>
                 <div class="alt-gesture-sequence" aria-label="Option A programming gesture">
                   <span class="gesture-step">1 · Option ↑ A</span>
                   <span class="gesture-arrow">→</span>
                   <span class="gesture-step"><span class="lang-de">2 · Encoder drehen</span><span class="lang-en">2 · turn encoder</span></span>
                   <span class="gesture-arrow">→</span>
-                  <span class="gesture-step"><span class="lang-de">3 · zurück zur Mitte</span><span class="lang-en">3 · release to center</span></span>
+                  <span class="gesture-step"><span class="lang-de">3 · zurück zur Mitte</span><span class="lang-en">3 · return to center</span></span>
                   <span class="gesture-arrow">→</span>
                   <span class="gesture-step"><span class="lang-de">4 · Wert bleibt gespeichert</span><span class="lang-en">4 · value stays stored</span></span>
                 </div>
@@ -1081,7 +1084,7 @@ const timingValues = [
           </div>
 
           <div class="alt-note" id="altNote">
-            <span class="lang-de"><strong>Verifizierter Kern:</strong> Option A verschiebt den Sequenzstart um 8 Schritte. Im dokumentierten Beispiel mit 16/8 + 16th wird die vollständige 16-Schritt-Sequenz einmal normal und einmal mit um 8 Schritte verschobenem Start gespielt. <strong>off</strong> startet immer bei Schritt 9; <strong>1</strong> ändert die Startposition nach jedem Durchlauf.</span><span class="lang-en"><strong>Verified core:</strong> Option A shifts the sequence start by 8 steps. In the documented 16/8 + 16th example, the complete 16-step sequence is played once normally and once with the start shifted by 8 steps. <strong>off</strong> always starts at Step 9; <strong>1</strong> changes the start position every run.</span>
+            <span class="lang-de"><strong>In der Quelle beschrieben:</strong> Option A verschiebt den Sequenzstart um 8 Schritte. Im dokumentierten Beispiel mit 16/8 + 16th wird die vollständige 16-Schritt-Sequenz einmal normal und einmal mit um 8 Schritte verschobenem Start gespielt. <strong>off</strong> startet immer bei Schritt 9; <strong>1</strong> ändert die Startposition nach jedem Durchlauf.</span><span class="lang-en"><strong>Described in the source:</strong> Option A shifts the sequence start by 8 steps. In the documented 16/8 + 16th example, the complete 16-step sequence is played once normally and once with the start shifted by 8 steps. <strong>off</strong> always starts at Step 9; <strong>1</strong> changes the start position every run.</span>
             <span class="alt-verify"><span class="lang-de">2–15: exakter Wiederholungszyklus muss noch an der Hardware geprüft werden</span><span class="lang-en">2–15: exact repeating cycle still needs hardware verification</span></span>
           </div>
         </div>

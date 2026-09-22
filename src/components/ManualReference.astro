@@ -1,0 +1,68 @@
+---
+import { chapters } from '../data/manual';
+---
+<nav class="manual-nav card" aria-label="Handbuch / Manual">
+  <h2><span class="lang-de">Handbuch & Praxis</span><span class="lang-en">Reference & workflows</span></h2>
+  <p><span class="lang-de">Quellenbasierte Leseausgabe · Software 2.05 · zur Durchsicht. Deutsch ist die Startsprache; der Sprachschalter oben gilt für die gesamte Seite.</span><span class="lang-en">Source-backed reading edition · software 2.05 · for review. German is the starting language; the selector above applies to the whole page.</span></p>
+  <ol>{chapters.map(chapter => <li><a href={`#${chapter.id}`}><span class="lang-de">{chapter.title[0]}</span><span class="lang-en">{chapter.title[1]}</span></a></li>)}</ol>
+  <p class="demo-links"><strong><span class="lang-de">Interaktive Beispiele:</span><span class="lang-en">Interactive examples:</span></strong> <a href="#timingDemo">Timing + ALIGN</a> · <a href="#chordProgramming"><span class="lang-de">Akkorde</span><span class="lang-en">Chords</span></a> · <a href="#optionA">Option A</a></p>
+</nav>
+<div class="manual-reference">
+  {chapters.map(chapter => <section class="card reference-chapter" id={chapter.id}>
+    {[0, 1].map(language => <div class={language === 0 ? 'lang-de language-block' : 'lang-en language-block'} lang={language === 0 ? 'de' : 'en'}>
+      <h2>{chapter.title[language]}</h2>
+      <p class="source-note">{language === 0 ? 'Quelle: Originalanleitung, Abschnitte ' : 'Source: original manual, sections '}{chapter.source}</p>
+      {chapter.paragraphs.map(paragraph => <p>{paragraph[language]}</p>)}
+      {chapter.steps && <ol class="recipe-steps">{chapter.steps.map(step => <li>{step[language]}</li>)}</ol>}
+      {chapter.headers && chapter.rows && <div class="reference-table" tabindex="0" role="region" aria-label={chapter.title[language]}><table>
+        <thead><tr>{chapter.headers.map(header => <th scope="col">{header[language]}</th>)}</tr></thead>
+        <tbody>{chapter.rows.map(row => <tr>{row.map((cell, index) => index === 0 ? <th scope="row">{cell[language]}</th> : <td>{cell[language]}</td>)}</tr>)}</tbody>
+      </table></div>}
+      <a class="back-top" href="#manual-top">{language === 0 ? '↑ Zur Übersicht' : '↑ Back to contents'}</a>
+    </div>)}
+  </section>)}
+</div>
+<aside class="card model-scope">
+  <h2><span class="lang-de">Zu den interaktiven Beispielen</span><span class="lang-en">About the interactive examples</span></h2>
+  <p><span class="lang-de">Die folgenden Modelle erklären ausgewählte Zusammenhänge. Das Timing-Modell zeigt nur die geraden B8-Werte, keine MIDI-/Gate-Ausgabe und keine Schalter-Resets. ALIGN genau an einer Taktgrenze folgt einer Darstellungsannahme, die noch zu prüfen ist. Option A zeigt das Quellenbeispiel mit 16th und Align 16/8; bei 2–15 wird kein unbestätigter Dauerzyklus simuliert. Siehe <a href="#verification">Prüfliste</a>.</span><span class="lang-en">The models below explain selected relationships. The timing model shows only straight B8 values, with no MIDI/gate output or switch resets. ALIGN exactly on a measure boundary follows a display assumption that still needs testing. Option A shows the source example with 16th and Align 16/8; it does not simulate an unconfirmed repeating cycle for 2–15. See the <a href="#verification">verification list</a>.</span></p>
+</aside>
+<style is:global>
+  html { scroll-behavior: smooth; }
+  .manual-nav ol { columns: 2; column-gap: 3rem; padding-left: 1.5rem; }
+  .manual-nav li { break-inside: avoid; padding: .35rem 0; }
+  .manual-nav a, .manual-reference a, .model-scope a { color: #254e55; text-underline-offset: .18em; }
+  .manual-reference { max-width: 1050px; margin-inline: auto; }
+  .reference-chapter { scroll-margin-top: 1rem; }
+  .reference-chapter p, .recipe-steps li, .model-scope p { line-height: 1.7; max-width: 85ch; }
+  .recipe-steps li { padding: .35rem 0 .35rem .3rem; }
+  .source-note { font-size: .82rem; color: #5c5a52; }
+  .reference-table { overflow-x: auto; margin-block: 1.3rem; }
+  .reference-table table { border-collapse: collapse; width: 100%; font-size: .95rem; }
+  .reference-table th, .reference-table td { border-bottom: 1px solid #ddd9ce; padding: .8rem; text-align: left; vertical-align: top; line-height: 1.55; }
+  .reference-table thead { background: #eeece5; }
+  .reference-table tbody th { width: 27%; font-weight: 650; }
+  .back-top { display: inline-block; margin-top: .6rem; font-size: .85rem; }
+  body.lang-en-active .language-block.lang-en { display: block; }
+  a:focus-visible, button:focus-visible, select:focus-visible, [tabindex]:focus-visible { outline: 3px solid #b46916; outline-offset: 3px; }
+  @media (max-width: 640px) {
+    main { padding: 16px 12px 40px; }
+    .card { padding: 20px 16px; }
+    .manual-nav ol { columns: 1; }
+    .reference-table th, .reference-table td { padding: .6rem .4rem; overflow-wrap: anywhere; }
+    .reference-table tbody th { width: 32%; }
+    #workflows thead, #verification thead { display: none; }
+    #workflows tr, #verification tr { display: block; border-bottom: 1px solid #ddd9ce; padding-block: .6rem; }
+    #workflows tbody th, #workflows td, #verification tbody th, #verification td { display: block; width: 100%; border: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  @media print {
+    :root { background: white; }
+    main { max-width: none; padding: 0; }
+    .page-topbar, .back-top, .demo-links, #timingDemo, #chordProgramming, #optionA, .model-scope { display: none; }
+    .card { border: 0; padding: 0; margin-top: 1.5rem; }
+    h2, thead { break-after: avoid; }
+    tr { break-inside: avoid; }
+    .reference-table { overflow: visible; }
+    .manual-nav a { text-decoration: none; }
+  }
+</style>

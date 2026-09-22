@@ -8,6 +8,15 @@ This site is built with Astro and is intended to be deployed as a static site.
 
 - `main`: production-ready source
 - feature branches: manual, simulator, and UI work
-- deployment: GitHub Actions → Hetzner
+- deployment: GitHub Actions → IONOS (SFTP)
 
 The online manual should preserve the SAM-16 hardware vocabulary and make complex timing/routing behavior visual and interactive.
+
+The published reference is maintained in `src/data/manual.ts`, rendered by
+`src/components/ManualReference.astro`. Each text pair is German / English; German
+is the default. The existing interactive examples remain in `src/pages/index.astro`.
+See [source policy and coverage](docs/manual/SOURCE-POLICY.md) before editing hardware claims.
+
+Build with `npm install` then `npm run build`. The static output is `dist/`.
+Use the browser's Print command for the reference in the selected language;
+interactive demos are omitted from printing.

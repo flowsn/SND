@@ -13,9 +13,15 @@ The workflow expects these repository secrets:
 - `IONOS_DEPLOY_PATH`
 
 The current deployment path is `/sam16/`.
+The public manual is at https://zombienation.com/snd/sam16/.
 
 ## Release flow
 
 `feature branch → pull request → merge to main → Astro build → SFTP upload to IONOS`
 
 The deployment helper uploads the generated `dist/` directory. Credentials are read only from GitHub Actions secrets and are never stored in the repository.
+
+For an explicitly authorized direct commit to `main`, the same push-triggered
+pipeline runs. Verify the workflow for that exact commit, including both Build
+and Deploy to IONOS, then check the public page for the new content. A successful
+local build alone does not confirm publication.
