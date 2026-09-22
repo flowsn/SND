@@ -2,6 +2,7 @@
 import { chapters } from '../data/manual';
 import { guides } from '../data/guides';
 import PanelLocator from './PanelLocator.astro';
+import CompactRows from './CompactRows.astro';
 ---
 <nav class="manual-nav card" aria-label="Handbuch / Manual">
   <h2><span class="lang-de">Handbuch & Praxis</span><span class="lang-en">Reference & workflows</span></h2>
@@ -14,14 +15,16 @@ import PanelLocator from './PanelLocator.astro';
   {chapters.map(chapter => <section class="card reference-chapter" id={chapter.id}>
     {[0, 1].map(language => <div class={language === 0 ? 'lang-de language-block' : 'lang-en language-block'} lang={language === 0 ? 'de' : 'en'}>
       <h2>{chapter.title[language]}</h2>
-      <p class="guide-intro">{guides[chapter.id].intro[language]}</p>
+      {!['pitch','velocity'].includes(chapter.id) && <p class="guide-intro">{guides[chapter.id].intro[language]}</p>}
       {(guides[chapter.id].rows || guides[chapter.id].globals) && <PanelLocator rows={guides[chapter.id].rows} globals={guides[chapter.id].globals} language={language} firstStep={chapter.id === 'scale-reference'} />}
+      {['pitch','velocity'].includes(chapter.id) ? <CompactRows chapter={chapter.id} language={language}/> : <>
       <h3>{language === 0 ? 'Welches Bedienelement?' : 'Which control?'}</h3>
       <p>{guides[chapter.id].find[language]}</p>
       <h3>{language === 0 ? 'So gehst du vor' : 'Try this'}</h3>
       <ol class="recipe-steps">{guides[chapter.id].actions.map(action=><li>{action[language]}</li>)}</ol>
       <div class="guide-result"><h3>{language === 0 ? 'Das passiert' : 'What changes'}</h3><p>{guides[chapter.id].result[language]}</p></div>
       <nav class="related-links" aria-label={language === 0 ? 'Passende Anleitungen' : 'Related instructions'}>{guides[chapter.id].links.map(link=><a href={`#${link.to}`}>{link.label[language]}</a>)}</nav>
+      </>}
       <details class="technical-details">
       <summary>{language === 0 ? 'Genauer nachlesen: Verhalten & technische Details' : 'Read more: behavior & technical details'}</summary>
       {chapter.paragraphs.map(paragraph => <p>{paragraph[language]}</p>)}

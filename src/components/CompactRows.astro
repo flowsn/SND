@@ -1,0 +1,29 @@
+---
+import ControlSymbol from './ControlSymbol.astro';
+const { chapter, language = 0 } = Astro.props;
+const de = language === 0;
+---
+<ul class="control-bullets">
+  {chapter === 'pitch' ? <>
+    <li><ControlSymbol kind="knob"/><div><strong>Pitch</strong> <span class="control-place">{de ? 'oberste Knopfreihe' : 'top knob row'}</span><br/>{de ? 'Chromatisch: 12 Uhr = C, nächste Position = Cis. Programmierte Scale: jede Position wählt eine gespeicherte Note oder einen Akkord.' : 'Chromatic: 12 o’clock = C, next position = C-sharp. Programmed Scale: each position selects a stored note or chord.'} <a href="#scale-reference">{de ? 'Akkorde programmieren →' : 'Program chords →'}</a></div></li>
+    <li><ControlSymbol kind="switch"/><div><strong>Transpose ↑ / ↓</strong> <span class="control-place">{de ? 'direkt unter Pitch' : 'directly below Pitch'}</span><br/>{de ? 'Mitte: keine Verschiebung. Oben/unten: Tonhöhe um das jeweilige Intervall versetzen; up und down sind getrennt von 0–15 Halbtönen einstellbar.' : 'Middle: no shift. Up/down: shift pitch by the corresponding interval; up and down are separately adjustable from 0–15 semitones.'} <a href="#global-controls">Transp. →</a></div></li>
+    <li><ControlSymbol kind="switch"/><div><strong>Scale</strong> <span class="control-place">{de ? 'global · unten rechts' : 'global · bottom right'}</span><br/>{de ? 'Unten: chromatic. Mitte: programmierte Belegung. Oben: program, nur im Stand. Die Belegung gilt für alle 16 Pitch-Knöpfe.' : 'Down: chromatic. Middle: programmed map. Up: program, while stopped only. The map applies to all 16 Pitch knobs.'}</div></li>
+    <li><ControlSymbol kind="socket"/><div><strong>1 · Add In</strong><br/>{de ? 'Tonhöhen-Modulation wird am Schrittanfang abgetastet. Ohne Kabel: Der zugehörige Regler transponiert die gesamte Sequenz von der Mitte aus bis zu ±1 Oktave.' : 'Pitch modulation is sampled at the start of each step. Unpatched: its control transposes the whole sequence by up to ±1 octave from the middle position.'}</div></li>
+    <li><ControlSymbol kind="socket"/><div><strong>1 · Out / MIDI</strong><br/>{de ? 'MIDI: vollständiger Akkord. Pitch-CV: zuerst eingegebene Note, 1 V/Oktave, 0–5 V.' : 'MIDI: full chord. Pitch CV: first-entered note, 1 V/octave, 0–5 V.'} <a href="#remote">{de ? 'MIDI-Transposition →' : 'MIDI transposition →'}</a></div></li>
+  </> : <>
+    <li><ControlSymbol kind="knob"/><div><strong>Velocity</strong> <span class="control-place">{de ? 'zweite Knopfreihe' : 'second knob row'}</span><br/>{de ? 'Normalmodus: links 1, rechts 127; Klickposition in der Mitte etwa 62–64. In Dual-/Split-Modi steuert der Knopf zusätzlich die Verteilung auf zwei MIDI-Kanäle.' : 'Normal mode: left 1, right 127; click position in the middle approximately 62–64. In Dual/Split modes, the knob also controls distribution across two MIDI channels.'}</div></li>
+    <li><ControlSymbol kind="switch"/><div><strong>Option ↓ B + </strong><ControlSymbol kind="knob"/><strong> Encoder 1–7</strong><br/>{de ? 'Velocity-Modus wählen; siehe Tabelle. Basis-Kanal + nächsthöherer Kanal. Bei Split gehört die Mittelstellung zum Basis-Kanal.' : 'Select the velocity mode; see table. Base channel + next higher channel. In Split modes, the middle position belongs to the base channel.'} <a href="#option-b">{de ? 'Option B einstellen →' : 'Set Option B →'}</a></div></li>
+    <li><ControlSymbol kind="socket"/><div><strong>2 · Add In</strong><br/>{de ? 'Modulation wird zur Knopfstellung addiert. In Split-Modi kann sie auch den MIDI-Kanal wechseln. B4/B5: gegensinnige Wirkung auf die beiden Hälften; B6/B7: gleichsinnig.' : 'Modulation is added to the knob setting. In Split modes it can also change the MIDI channel. B4/B5: opposite effect on the two halves; B6/B7: same direction.'} <a href="#io">{de ? 'Pro Schritt schalten →' : 'Switch per step →'}</a></div></li>
+    <li><ControlSymbol kind="socket"/><div><strong>2 · Out</strong><br/>{de ? 'CV folgt Add In kontinuierlich, auch innerhalb des Schritts. Die MIDI-Modi verändern diesen analogen Ausgang nicht.' : 'CV follows Add In continuously, including within the step. MIDI modes do not change this analog output.'}</div></li>
+  </>}
+</ul>
+{chapter === 'velocity' && <p class="compact-example"><strong>Dual / X-fade:</strong> {de ? 'Basis-Kanal = Akkord · zweiter Kanal = zuerst eingegebene Note.' : 'Base channel = chord · second channel = first-entered note.'} <a href="#scale-reference">{de ? 'Akkord-Eingabe →' : 'Chord entry →'}</a></p>}
+<style>
+  .control-bullets {list-style:none;padding:0;margin:1rem 0;}
+  .control-bullets li {display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid #e1ded5;line-height:1.55;font-size:.96rem;}
+  .control-bullets li > :global(svg) {margin-top:1px;}
+  .control-bullets strong {font-weight:750;}
+  .control-place {font-size:.8rem;color:#666158;margin-left:8px;}
+  .compact-example {padding:12px 15px;background:#edf3f8;border-left:3px solid #2867a0;font-size:.94rem;}
+  @media(max-width:640px){.control-place {display:block;margin-left:0;}.control-place + br{display:none;}}
+</style>

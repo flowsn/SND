@@ -29,3 +29,14 @@ and printed pagination were not independently tested.
 - Reader-facing “detent” was removed, including the older timing demo copy.
 - Hardware verification remains outstanding; the teaching diagrams do not add
   hardware behavior beyond the source-backed reference.
+
+## Compact Pitch / Velocity layout
+
+- Pitch and Velocity use compact control-symbol bullets instead of introductory
+  paragraphs and tutorial headings; German and English both checked.
+- Shared symbols distinguish blue knobs, orange toggles and purple sockets.
+- Global switch upper/lower labels were checked against the supplied hardware
+  photo E159EC01-30DF-4FD0-8D0B-F7B454B35D0C.jpeg; Clock's middle var. label is shown.
+- Desktop and mobile screenshots inspected; MIDI chord cross-link clicked;
+  all chapter anchors and existing transport smoke checks pass.
+- The rest of the manual retains the previous reading structure for now.

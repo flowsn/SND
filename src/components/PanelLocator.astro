@@ -1,4 +1,5 @@
 ---
+import ControlSymbol from './ControlSymbol.astro';
 const { rows = [], globals = [], language = 0, firstStep = false } = Astro.props;
 const controls = [
   {id:'trigger',label:'Trigger / Reset',kind:'locator-switch'},
@@ -8,20 +9,30 @@ const controls = [
   {id:'xfader',label:'3 · Xfader',kind:'locator-knob'},
   {id:'io',label:'4 · I/O',kind:'locator-switch'}
 ];
-const globalNames = ['Clock','Scale','Option','M.Ch.','Cont.','Transp.','Encoder'];
+const globalControls = [
+  {name:'Clock',up:'Note',down:'16th',middle:'var.'},
+  {name:'Scale',up:'program',down:'chromatic'},
+  {name:'Option',up:'A',down:'B'},
+  {name:'M.Ch.',up:'run',down:'reset'},
+  {name:'Cont.',up:'Row3',down:'Row4'},
+  {name:'Transp.',up:'up',down:'down'},
+  {name:'Encoder',up:'off · 1–15',down:''}
+];
 ---
 <figure class="panel-locator">
-  <figcaption>{language === 0 ? 'Hier am Gerät' : 'Find it on the panel'} <span>{language === 0 ? 'Vereinfachte Vorderansicht · markiert = hier arbeiten' : 'Simplified front view · highlighted = controls to use'}</span></figcaption>
+  <figcaption>{language === 0 ? 'Bedienelemente' : 'Controls'} <span>{language === 0 ? 'Vorderansicht · relevante Reihen hervorgehoben' : 'Front view · relevant rows highlighted'}</span></figcaption>
   <div class="panel-body" aria-hidden="true">
     <div class="panel-grid panel-numbers"><span>{language === 0 ? 'Schritt →' : 'Step →'}</span>{Array.from({length:16},(_,i)=><span>{i+1}</span>)}</div>
     {controls.map(control=><div class:list={['panel-grid',{'row-highlight':rows.includes(control.id)}]}>
       <span class="panel-row-label">{control.label}</span>
-      {Array.from({length:16},(_,i)=><span class:list={['panel-cell',{'target-control':rows.includes(control.id) && (!firstStep || i===0)}]}><i class={control.kind}/></span>)}
+      {Array.from({length:16},(_,i)=><span class:list={['panel-cell',{'target-control':rows.includes(control.id) && (!firstStep || i===0)}]}><ControlSymbol kind={control.kind === 'locator-knob' ? 'knob' : 'switch'}/></span>)}
     </div>)}
     <div class="panel-global-caption">{language === 0 ? 'Globale Bedienelemente · unten rechts ↘' : 'Global controls · bottom right ↘'}</div>
-    <div class="panel-globals">{globalNames.map(name=><div class:list={['global-cell',{'target-control':globals.includes(name)}]}><i class={name === 'Encoder' ? 'locator-knob' : 'locator-switch'}/><span>{name}</span></div>)}</div>
+    <div class="scroll-hint">{language === 0 ? '↔ Schalterreihe seitlich verschieben' : '↔ Scroll the switch row sideways'}</div>
+    <div class="global-scroll"><div class="panel-globals">{globalControls.map(control=><div class:list={['global-cell',{'target-control':globals.includes(control.name)}]}><span class="position-label">{control.up}</span><div class="switch-drawing">{control.middle && <small>{control.middle}</small>}<ControlSymbol kind={control.name === 'Encoder' ? 'knob' : 'switch'}/></div><span class="position-label">{control.down || '\u00a0'}</span><strong>{control.name}</strong></div>)}</div></div>
   </div>
-  <p class="panel-key">{firstStep ? (language === 0 ? 'Zum Programmieren nur Pitch von Schritt 1 benutzen.' : 'For programming, use only the step 1 Pitch knob.') : (language === 0 ? 'Jede senkrechte Spalte gehört zu einem Schritt. Die globale Gruppe gilt für alle Schritte.' : 'Each vertical column belongs to one step. The global group applies to all steps.')}</p>
+  <div class="panel-key"><span><ControlSymbol kind="knob"/> {language === 0 ? 'Drehknopf' : 'Knob'}</span><span><ControlSymbol kind="switch"/> {language === 0 ? 'Kippschalter' : 'Toggle'}</span><span><ControlSymbol kind="socket"/> {language === 0 ? 'Buchse (unten in den Stichpunkten)' : 'Socket (in the bullets below)'}</span></div>
+  {firstStep && <p class="panel-key">{language === 0 ? 'Zum Programmieren nur Pitch von Schritt 1 benutzen.' : 'For programming, use only the step 1 Pitch knob.'}</p>}
 </figure>
 <style>
   .panel-locator {margin:1.4rem 0; background:#f2f0e8; border:1px solid #d9d3c6; border-radius:10px; padding:16px; max-width:850px;}
@@ -35,20 +46,30 @@ const globalNames = ['Clock','Scale','Option','M.Ch.','Cont.','Transp.','Encoder
   .locator-knob {width:18px; height:18px; border:2px solid #88857b; border-radius:50%; position:relative; background:#e3e0d7;}
   .locator-knob::after {content:''; position:absolute; height:5px; width:2px; background:#666; top:1px; left:6px;}
   .locator-switch {width:6px; height:15px; background:#bdb9ad; border:1px solid #8d897d; border-radius:4px;}
-  .row-highlight {background:#e1ece8; color:#173f33;}
-  .target-control {background:#215b49; color:white; outline:1px solid #215b49;}
+  .row-highlight {background:#e5e8ea; color:#252525;}
+  .panel-cell:not(.target-control) {opacity:.28;}
+  .target-control {background:#fff; outline:1px solid #c3c3bc;}
+  .panel-cell :global(svg) {width:22px;height:22px;}
   .target-control .locator-knob {background:#fff; border-color:#fff;}
   .target-control .locator-switch {background:#fff; border-color:#fff;}
   .panel-global-caption {text-align:right; font-size:11px; margin:16px 0 7px;}
-  .panel-globals {display:grid; grid-template-columns:repeat(7,1fr); gap:5px; margin-left:auto; max-width:490px;}
-  .global-cell {display:flex; align-items:center; flex-direction:column; gap:8px; padding:8px 2px; border-radius:4px; font-size:11px; min-height:52px;}
-  .panel-key {font-size:.8rem; color:#5b584e; margin:12px 0 0;}
+  .scroll-hint {display:none;font-size:10px;color:#666158;margin-bottom:5px;}
+  .global-scroll {overflow-x:auto;padding:2px;}
+  .panel-globals {display:grid; grid-template-columns:repeat(7,1fr); gap:5px; margin-left:auto; width:540px;}
+  .global-cell {display:flex; align-items:center; flex-direction:column; gap:4px; padding:8px 2px; border-radius:4px; font-size:11px;}
+  .switch-drawing {position:relative;}
+  .switch-drawing small {position:absolute;right:26px;top:7px;font-size:10px;}
+  .position-label {font-size:11px;min-height:13px;}
+  .panel-key {font-size:.75rem; color:#5b584e; margin:12px 0 0;display:flex;flex-wrap:wrap;gap:6px 15px;}
+  .panel-key :global(svg) {width:20px;height:20px;}
   @media(max-width:640px) {
+    .scroll-hint {display:block;}
     .panel-locator {padding:10px; margin-inline:-4px;}
     .panel-grid {grid-template-columns:88px repeat(16,minmax(0,1fr)); gap:1px; padding:3px 1px;}
     .panel-row-label {font-size:9px;}
     .panel-numbers {font-size:7px;}
     .panel-cell {height:20px;}
+    .panel-cell :global(svg) {width:12px;height:16px;}
     .panel-cell .locator-knob {width:9px; height:9px; border-width:1px;}
     .panel-cell .locator-knob::after {height:3px; width:1px; left:3px; top:0;}
     .panel-cell .locator-switch {width:4px; height:12px;}

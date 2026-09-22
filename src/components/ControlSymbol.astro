@@ -1,0 +1,11 @@
+---
+const { kind = 'knob' } = Astro.props;
+---
+<svg class={`control-symbol symbol-${kind}`} viewBox="0 0 28 28" aria-hidden="true">
+  {kind === 'knob' ? <><circle cx="14" cy="14" r="10"/><path d="M14 5v7"/></> : kind === 'switch' ? <><rect x="9" y="2" width="10" height="24" rx="5"/><circle cx="14" cy="7" r="1"/><circle cx="14" cy="21" r="1"/><path d="M14 15l7-5"/><circle cx="14" cy="14" r="3"/></> : <><circle cx="14" cy="14" r="10"/><circle cx="14" cy="14" r="4"/></>}
+</svg>
+<style>
+  .control-symbol {width:28px;height:28px;display:inline-block;flex:none;vertical-align:middle;fill:#e4effb;stroke:#2867a0;stroke-width:2;}
+  .symbol-switch {fill:#fff0dc;stroke:#a45e13;}
+  .symbol-socket {fill:#efe9f7;stroke:#765398;}
+</style>
