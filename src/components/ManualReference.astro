@@ -16,7 +16,7 @@ import CompactRows from './CompactRows.astro';
     {[0, 1].map(language => <div class={language === 0 ? 'lang-de language-block' : 'lang-en language-block'} lang={language === 0 ? 'de' : 'en'}>
       <h2>{chapter.title[language]}</h2>
       {!['pitch','velocity','global-controls'].includes(chapter.id) && <p class="guide-intro">{guides[chapter.id].intro[language]}</p>}
-      {(guides[chapter.id].rows || guides[chapter.id].globals) && <PanelLocator rows={guides[chapter.id].rows} globals={guides[chapter.id].globals} language={language} firstStep={chapter.id === 'scale-reference'} />}
+      {(guides[chapter.id].rows || guides[chapter.id].globals) && <PanelLocator chapter={chapter.id} rows={guides[chapter.id].rows} globals={guides[chapter.id].globals} language={language} firstStep={chapter.id === 'scale-reference'} />}
       {['pitch','velocity','global-controls'].includes(chapter.id) ? <CompactRows chapter={chapter.id} language={language}/> : <>
       <h3>{language === 0 ? 'Welches Bedienelement?' : 'Which control?'}</h3>
       <p>{guides[chapter.id].find[language]}</p>

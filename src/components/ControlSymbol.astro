@@ -1,12 +1,12 @@
 ---
 const { kind = 'knob', scope = 'step', position = 'middle' } = Astro.props;
 ---
-<svg class={`control-symbol symbol-${kind} scope-${scope}`} viewBox="0 0 28 28" aria-hidden="true">
+<svg class={`control-symbol symbol-${kind} scope-${scope}`} data-position={kind === 'switch' ? position : undefined} viewBox="0 0 28 28" aria-hidden="true">
   {kind === 'knob' ? <><circle cx="14" cy="14" r="10"/><path d="M14 5v7"/></> : kind === 'switch' ? <>
     <circle class="toggle-base" cx="14" cy="14" r="9"/>
     <circle class="toggle-ring" cx="14" cy="14" r="6"/>
     <circle class="toggle-pivot" cx="14" cy="14" r="3.5"/>
-    <rect class="toggle-lever" x="11.5" y="1" width="5" height="16" rx="2.5" transform={position === 'down' ? 'rotate(180 14 14)' : position === 'middle' ? 'rotate(45 14 14)' : undefined}/>
+    <rect class="toggle-lever" x="11.5" y={position === 'middle' ? 10 : 1} width="5" height={position === 'middle' ? 8 : 16} rx="2.5" transform={position === 'down' ? 'rotate(180 14 14)' : undefined}/>
   </> : <><circle cx="14" cy="14" r="10"/><circle cx="14" cy="14" r="4"/></>}
 </svg>
 <style>
