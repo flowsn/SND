@@ -1,0 +1,59 @@
+---
+const { rows = [], globals = [], language = 0, firstStep = false } = Astro.props;
+const controls = [
+  {id:'trigger',label:'Trigger / Reset',kind:'locator-switch'},
+  {id:'pitch',label:'1 · Pitch',kind:'locator-knob'},
+  {id:'transpose',label:'↑ / ↓ Transpose',kind:'locator-switch'},
+  {id:'velocity',label:'2 · Velocity',kind:'locator-knob'},
+  {id:'xfader',label:'3 · Xfader',kind:'locator-knob'},
+  {id:'io',label:'4 · I/O',kind:'locator-switch'}
+];
+const globalNames = ['Clock','Scale','Option','M.Ch.','Cont.','Transp.','Encoder'];
+---
+<figure class="panel-locator">
+  <figcaption>{language === 0 ? 'Hier am Gerät' : 'Find it on the panel'} <span>{language === 0 ? 'Vereinfachte Vorderansicht · markiert = hier arbeiten' : 'Simplified front view · highlighted = controls to use'}</span></figcaption>
+  <div class="panel-body" aria-hidden="true">
+    <div class="panel-grid panel-numbers"><span>{language === 0 ? 'Schritt →' : 'Step →'}</span>{Array.from({length:16},(_,i)=><span>{i+1}</span>)}</div>
+    {controls.map(control=><div class:list={['panel-grid',{'row-highlight':rows.includes(control.id)}]}>
+      <span class="panel-row-label">{control.label}</span>
+      {Array.from({length:16},(_,i)=><span class:list={['panel-cell',{'target-control':rows.includes(control.id) && (!firstStep || i===0)}]}><i class={control.kind}/></span>)}
+    </div>)}
+    <div class="panel-global-caption">{language === 0 ? 'Globale Bedienelemente · unten rechts ↘' : 'Global controls · bottom right ↘'}</div>
+    <div class="panel-globals">{globalNames.map(name=><div class:list={['global-cell',{'target-control':globals.includes(name)}]}><i class={name === 'Encoder' ? 'locator-knob' : 'locator-switch'}/><span>{name}</span></div>)}</div>
+  </div>
+  <p class="panel-key">{firstStep ? (language === 0 ? 'Zum Programmieren nur Pitch von Schritt 1 benutzen.' : 'For programming, use only the step 1 Pitch knob.') : (language === 0 ? 'Jede senkrechte Spalte gehört zu einem Schritt. Die globale Gruppe gilt für alle Schritte.' : 'Each vertical column belongs to one step. The global group applies to all steps.')}</p>
+</figure>
+<style>
+  .panel-locator {margin:1.4rem 0; background:#f2f0e8; border:1px solid #d9d3c6; border-radius:10px; padding:16px; max-width:850px;}
+  figcaption {font-weight:750; margin-bottom:15px; font-size:.95rem;}
+  figcaption span {display:block; font-weight:400; color:#5b584e; font-size:.8rem; margin-top:4px;}
+  .panel-grid {display:grid; grid-template-columns:130px repeat(16,minmax(0,1fr)); align-items:center; gap:3px; padding:4px 6px; border-radius:4px;}
+  .panel-numbers {font-size:10px; color:#5b584e; text-align:center;}
+  .panel-row-label {font-size:12px; font-weight:600;}
+  .panel-cell {display:flex; justify-content:center; align-items:center; height:25px; border-radius:4px;}
+  i {display:block; flex-shrink:0;}
+  .locator-knob {width:18px; height:18px; border:2px solid #88857b; border-radius:50%; position:relative; background:#e3e0d7;}
+  .locator-knob::after {content:''; position:absolute; height:5px; width:2px; background:#666; top:1px; left:6px;}
+  .locator-switch {width:6px; height:15px; background:#bdb9ad; border:1px solid #8d897d; border-radius:4px;}
+  .row-highlight {background:#e1ece8; color:#173f33;}
+  .target-control {background:#215b49; color:white; outline:1px solid #215b49;}
+  .target-control .locator-knob {background:#fff; border-color:#fff;}
+  .target-control .locator-switch {background:#fff; border-color:#fff;}
+  .panel-global-caption {text-align:right; font-size:11px; margin:16px 0 7px;}
+  .panel-globals {display:grid; grid-template-columns:repeat(7,1fr); gap:5px; margin-left:auto; max-width:490px;}
+  .global-cell {display:flex; align-items:center; flex-direction:column; gap:8px; padding:8px 2px; border-radius:4px; font-size:11px; min-height:52px;}
+  .panel-key {font-size:.8rem; color:#5b584e; margin:12px 0 0;}
+  @media(max-width:640px) {
+    .panel-locator {padding:10px; margin-inline:-4px;}
+    .panel-grid {grid-template-columns:88px repeat(16,minmax(0,1fr)); gap:1px; padding:3px 1px;}
+    .panel-row-label {font-size:9px;}
+    .panel-numbers {font-size:7px;}
+    .panel-cell {height:20px;}
+    .panel-cell .locator-knob {width:9px; height:9px; border-width:1px;}
+    .panel-cell .locator-knob::after {height:3px; width:1px; left:3px; top:0;}
+    .panel-cell .locator-switch {width:4px; height:12px;}
+    .global-cell {font-size:9px;}
+    .panel-globals {gap:2px;}
+  }
+  @media print {.panel-locator {break-inside:avoid; print-color-adjust:exact;}}
+</style>

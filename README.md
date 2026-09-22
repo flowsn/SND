@@ -12,8 +12,10 @@ This site is built with Astro and is intended to be deployed as a static site.
 
 The online manual should preserve the SAM-16 hardware vocabulary and make complex timing/routing behavior visual and interactive.
 
-The published reference is maintained in `src/data/manual.ts`, rendered by
-`src/components/ManualReference.astro`. Each text pair is German / English; German
+The practical reading layer is maintained in `src/data/guides.ts`; detailed
+reference text and tables live in `src/data/manual.ts`. Both are rendered by
+`src/components/ManualReference.astro`, with physical control maps from
+`src/components/PanelLocator.astro`. Each text pair is German / English; German
 is the default. The existing interactive examples remain in `src/pages/index.astro`.
 See [source policy and coverage](docs/manual/SOURCE-POLICY.md) before editing hardware claims.
 

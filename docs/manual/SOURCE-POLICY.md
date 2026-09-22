@@ -13,7 +13,11 @@ Chapter source labels refer to the numbered sections in that transcription.
 The body labels Song Position Pointer as 4.4 and timing discussion as 4.5;
 the contents list does not match this numbering exactly. Follow the body headings.
 
-German and English are maintained together in `src/data/manual.ts`. Technical
+German and English are maintained together in `src/data/manual.ts` and
+`src/data/guides.ts`. The latter supplies a practical introduction, physical
+location, actions, expected result and direct related links for every chapter.
+PanelLocator is a simplified control-location drawing, not a scaled reproduction
+or a claim about current switch positions. Technical
 control names remain those printed on the hardware. Workflows combine documented
 functions and are labeled as editorial procedures. Prior conversation and video
 drafts are context, not a replacement authority for hardware claims.
@@ -54,3 +58,12 @@ clock, global settings, step settings and cabling. In particular:
 The existing interactive diagrams are deliberately limited teaching models.
 The page identifies their scope before the diagrams. A passing website build
 does not constitute a hardware verification pass.
+
+## Reader-first editing
+
+Start with the physical control, not an abstract parameter. Identify its row,
+neighboring controls and whether it acts on one step or all steps. Give a short
+action and observable result. Link directly to related procedures, especially
+Pitch → chord entry. Use everyday wording (for example, “click position in the
+middle”). Keep ranges, source caveats and deeper behavior available under the
+chapter's expandable reference; do not make them the opening explanation.

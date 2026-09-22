@@ -1,9 +1,12 @@
 ---
 import { chapters } from '../data/manual';
+import { guides } from '../data/guides';
+import PanelLocator from './PanelLocator.astro';
 ---
 <nav class="manual-nav card" aria-label="Handbuch / Manual">
   <h2><span class="lang-de">Handbuch & Praxis</span><span class="lang-en">Reference & workflows</span></h2>
-  <p><span class="lang-de">Quellenbasierte Leseausgabe · Software 2.05 · zur Durchsicht. Deutsch ist die Startsprache; der Sprachschalter oben gilt für die gesamte Seite.</span><span class="lang-en">Source-backed reading edition · software 2.05 · for review. German is the starting language; the selector above applies to the whole page.</span></p>
+  <p><span class="lang-de">Bedienelement finden. Etwas ausprobieren. Das Ergebnis hören. Wähle ein Thema oder beginne mit einem dieser Abläufe.</span><span class="lang-en">Find the control. Try it. Hear what changes. Choose a topic or start with one of these tasks.</span></p>
+  <div class="task-links"><a href="#connections"><span class="lang-de">Einen Synth anschließen</span><span class="lang-en">Connect a synth</span></a><a href="#pitch"><span class="lang-de">Eine Melodie einstellen</span><span class="lang-en">Set the notes</span></a><a href="#scale-reference"><span class="lang-de">Einen MIDI-Akkord speichern</span><span class="lang-en">Store a MIDI chord</span></a><a href="#timing-sync"><span class="lang-de">Den Rhythmus verändern</span><span class="lang-en">Change the rhythm</span></a></div>
   <ol>{chapters.map(chapter => <li><a href={`#${chapter.id}`}><span class="lang-de">{chapter.title[0]}</span><span class="lang-en">{chapter.title[1]}</span></a></li>)}</ol>
   <p class="demo-links"><strong><span class="lang-de">Interaktive Beispiele:</span><span class="lang-en">Interactive examples:</span></strong> <a href="#timingDemo">Timing + ALIGN</a> · <a href="#chordProgramming"><span class="lang-de">Akkorde</span><span class="lang-en">Chords</span></a> · <a href="#optionA">Option A</a></p>
 </nav>
@@ -11,13 +14,24 @@ import { chapters } from '../data/manual';
   {chapters.map(chapter => <section class="card reference-chapter" id={chapter.id}>
     {[0, 1].map(language => <div class={language === 0 ? 'lang-de language-block' : 'lang-en language-block'} lang={language === 0 ? 'de' : 'en'}>
       <h2>{chapter.title[language]}</h2>
-      <p class="source-note">{language === 0 ? 'Quelle: Originalanleitung, Abschnitte ' : 'Source: original manual, sections '}{chapter.source}</p>
+      <p class="guide-intro">{guides[chapter.id].intro[language]}</p>
+      {(guides[chapter.id].rows || guides[chapter.id].globals) && <PanelLocator rows={guides[chapter.id].rows} globals={guides[chapter.id].globals} language={language} firstStep={chapter.id === 'scale-reference'} />}
+      <h3>{language === 0 ? 'Welches Bedienelement?' : 'Which control?'}</h3>
+      <p>{guides[chapter.id].find[language]}</p>
+      <h3>{language === 0 ? 'So gehst du vor' : 'Try this'}</h3>
+      <ol class="recipe-steps">{guides[chapter.id].actions.map(action=><li>{action[language]}</li>)}</ol>
+      <div class="guide-result"><h3>{language === 0 ? 'Das passiert' : 'What changes'}</h3><p>{guides[chapter.id].result[language]}</p></div>
+      <nav class="related-links" aria-label={language === 0 ? 'Passende Anleitungen' : 'Related instructions'}>{guides[chapter.id].links.map(link=><a href={`#${link.to}`}>{link.label[language]}</a>)}</nav>
+      <details class="technical-details">
+      <summary>{language === 0 ? 'Genauer nachlesen: Verhalten & technische Details' : 'Read more: behavior & technical details'}</summary>
       {chapter.paragraphs.map(paragraph => <p>{paragraph[language]}</p>)}
       {chapter.steps && <ol class="recipe-steps">{chapter.steps.map(step => <li>{step[language]}</li>)}</ol>}
+      </details>
       {chapter.headers && chapter.rows && <div class="reference-table" tabindex="0" role="region" aria-label={chapter.title[language]}><table>
         <thead><tr>{chapter.headers.map(header => <th scope="col">{header[language]}</th>)}</tr></thead>
         <tbody>{chapter.rows.map(row => <tr>{row.map((cell, index) => index === 0 ? <th scope="row">{cell[language]}</th> : <td>{cell[language]}</td>)}</tr>)}</tbody>
       </table></div>}
+      <p class="source-note">{language === 0 ? 'Grundlage: deutsche Originalanleitung, Software 2.05 · Abschnitte ' : 'Based on the original German manual, software 2.05 · sections '}{chapter.source}</p>
       <a class="back-top" href="#manual-top">{language === 0 ? '↑ Zur Übersicht' : '↑ Back to contents'}</a>
     </div>)}
   </section>)}
@@ -30,6 +44,15 @@ import { chapters } from '../data/manual';
   html { scroll-behavior: smooth; }
   .manual-nav ol { columns: 2; column-gap: 3rem; padding-left: 1.5rem; }
   .manual-nav li { break-inside: avoid; padding: .35rem 0; }
+  .task-links, .related-links {display:flex; flex-wrap:wrap; gap:10px; margin:1.2rem 0;}
+  .task-links a, .related-links a {padding:10px 14px; border:1px solid #b9c9c1; border-radius:6px; background:#f0f6f3; font-weight:600; font-size:.9rem;}
+  .guide-intro {font-size:1.18rem;}
+  .reference-chapter h3 {font-size:1rem; margin:1.5rem 0 .4rem;}
+  .reference-chapter h3 + p {margin-top:0;}
+  .guide-result {border-left:4px solid #215b49; padding:1px 18px; margin-block:1.2rem; background:#f0f6f3;}
+  .guide-result h3 {margin-top:.8rem;}
+  .technical-details {border-top:1px solid #d7d4cb; border-bottom:1px solid #d7d4cb; padding:14px 0; margin-block:1.2rem;}
+  .technical-details summary {cursor:pointer; color:#254e55; font-weight:650; line-height:1.5;}
   .manual-nav a, .manual-reference a, .model-scope a { color: #254e55; text-underline-offset: .18em; }
   .manual-reference { max-width: 1050px; margin-inline: auto; }
   .reference-chapter { scroll-margin-top: 1rem; }
@@ -64,5 +87,6 @@ import { chapters } from '../data/manual';
     tr { break-inside: avoid; }
     .reference-table { overflow: visible; }
     .manual-nav a { text-decoration: none; }
+    .technical-details > :not(summary) {display:block !important;}
   }
 </style>
