@@ -23,15 +23,15 @@ const globalControls = [
   <figcaption>{language === 0 ? 'Bedienelemente' : 'Controls'} <span>{language === 0 ? 'Vorderansicht · relevante Reihen hervorgehoben' : 'Front view · relevant rows highlighted'}</span></figcaption>
   <div class="panel-body" aria-hidden="true">
     <div class="panel-grid panel-numbers"><span>{language === 0 ? 'Schritt →' : 'Step →'}</span>{Array.from({length:16},(_,i)=><span>{i+1}</span>)}</div>
-    {controls.map(control=><div class:list={['panel-grid',{'row-highlight':rows.includes(control.id)}]}>
+    {controls.map(control=><div class:list={['panel-grid',control.kind === 'locator-knob' ? 'tone-knob' : 'tone-step',{'row-highlight':rows.includes(control.id)}]}>
       <span class="panel-row-label">{control.label}</span>
       {Array.from({length:16},(_,i)=><span class:list={['panel-cell',{'target-control':rows.includes(control.id) && (!firstStep || i===0)}]}><ControlSymbol kind={control.kind === 'locator-knob' ? 'knob' : 'switch'}/></span>)}
     </div>)}
     <div class="panel-global-caption">{language === 0 ? 'Globale Bedienelemente · unten rechts ↘' : 'Global controls · bottom right ↘'}</div>
     <div class="scroll-hint">{language === 0 ? '↔ Schalterreihe seitlich verschieben' : '↔ Scroll the switch row sideways'}</div>
-    <div class="global-scroll"><div class="panel-globals">{globalControls.map(control=><div class:list={['global-cell',{'target-control':globals.includes(control.name)}]}><span class="position-label">{control.up}</span><div class="switch-drawing">{control.middle && <small>{control.middle}</small>}<ControlSymbol kind={control.name === 'Encoder' ? 'knob' : 'switch'}/></div><span class="position-label">{control.down || '\u00a0'}</span><strong>{control.name}</strong></div>)}</div></div>
+    <div class="global-scroll"><div class="panel-globals">{globalControls.map(control=><div class:list={['global-cell',control.name === 'Encoder' ? 'tone-knob' : 'tone-global',{'target-control':globals.includes(control.name)}]}><span class="position-label">{control.up}</span><div class="switch-drawing">{control.middle && <small>{control.middle}</small>}<ControlSymbol kind={control.name === 'Encoder' ? 'knob' : 'switch'} scope="global"/></div><span class="position-label">{control.down || '\u00a0'}</span><strong>{control.name}</strong></div>)}</div></div>
   </div>
-  <div class="panel-key"><span><ControlSymbol kind="knob"/> {language === 0 ? 'Drehknopf' : 'Knob'}</span><span><ControlSymbol kind="switch"/> {language === 0 ? 'Kippschalter' : 'Toggle'}</span><span><ControlSymbol kind="socket"/> {language === 0 ? 'Buchse (unten in den Stichpunkten)' : 'Socket (in the bullets below)'}</span></div>
+  <div class="panel-key"><span><ControlSymbol kind="knob"/> {language === 0 ? 'Drehknopf' : 'Knob'}</span><span><ControlSymbol kind="switch"/> {language === 0 ? 'Schritt-Schalter' : 'Step switch'}</span><span><ControlSymbol kind="switch" scope="global"/> {language === 0 ? 'Globaler Schalter' : 'Global switch'}</span><span><ControlSymbol kind="socket"/> {language === 0 ? 'Buchse' : 'Socket'}</span></div>
   {firstStep && <p class="panel-key">{language === 0 ? 'Zum Programmieren nur Pitch von Schritt 1 benutzen.' : 'For programming, use only the step 1 Pitch knob.'}</p>}
 </figure>
 <style>
@@ -46,9 +46,12 @@ const globalControls = [
   .locator-knob {width:18px; height:18px; border:2px solid #88857b; border-radius:50%; position:relative; background:#e3e0d7;}
   .locator-knob::after {content:''; position:absolute; height:5px; width:2px; background:#666; top:1px; left:6px;}
   .locator-switch {width:6px; height:15px; background:#bdb9ad; border:1px solid #8d897d; border-radius:4px;}
-  .row-highlight {background:#e5e8ea; color:#252525;}
+  .tone-knob {--control-fill:#e7f0fb;--control-edge:#b4cde6;}
+  .tone-step {--control-fill:#fff0da;--control-edge:#ddbe90;}
+  .tone-global {--control-fill:#eee5f8;--control-edge:#c8afdf;}
+  .row-highlight {background:var(--control-fill); color:#252525;}
   .panel-cell:not(.target-control) {opacity:.28;}
-  .target-control {background:#fff; outline:1px solid #c3c3bc;}
+  .target-control {background:var(--control-fill); outline:1px solid var(--control-edge);}
   .panel-cell :global(svg) {width:22px;height:22px;}
   .target-control .locator-knob {background:#fff; border-color:#fff;}
   .target-control .locator-switch {background:#fff; border-color:#fff;}

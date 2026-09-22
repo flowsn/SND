@@ -1,11 +1,21 @@
 ---
-const { kind = 'knob' } = Astro.props;
+const { kind = 'knob', scope = 'step', position = 'middle' } = Astro.props;
 ---
-<svg class={`control-symbol symbol-${kind}`} viewBox="0 0 28 28" aria-hidden="true">
-  {kind === 'knob' ? <><circle cx="14" cy="14" r="10"/><path d="M14 5v7"/></> : kind === 'switch' ? <><rect x="9" y="2" width="10" height="24" rx="5"/><circle cx="14" cy="7" r="1"/><circle cx="14" cy="21" r="1"/><path d="M14 15l7-5"/><circle cx="14" cy="14" r="3"/></> : <><circle cx="14" cy="14" r="10"/><circle cx="14" cy="14" r="4"/></>}
+<svg class={`control-symbol symbol-${kind} scope-${scope}`} viewBox="0 0 28 28" aria-hidden="true">
+  {kind === 'knob' ? <><circle cx="14" cy="14" r="10"/><path d="M14 5v7"/></> : kind === 'switch' ? <>
+    <circle class="toggle-base" cx="14" cy="14" r="9"/>
+    <circle class="toggle-ring" cx="14" cy="14" r="6"/>
+    <circle class="toggle-pivot" cx="14" cy="14" r="3.5"/>
+    <rect class="toggle-lever" x="11.5" y="1" width="5" height="16" rx="2.5" transform={position === 'down' ? 'rotate(180 14 14)' : position === 'middle' ? 'rotate(45 14 14)' : undefined}/>
+  </> : <><circle cx="14" cy="14" r="10"/><circle cx="14" cy="14" r="4"/></>}
 </svg>
 <style>
   .control-symbol {width:28px;height:28px;display:inline-block;flex:none;vertical-align:middle;fill:#e4effb;stroke:#2867a0;stroke-width:2;}
-  .symbol-switch {fill:#fff0dc;stroke:#a45e13;}
-  .symbol-socket {fill:#efe9f7;stroke:#765398;}
+  .symbol-switch {fill:#fff0dc;stroke:#a45e13;stroke-width:1.5;}
+  .symbol-switch.scope-global {fill:#eee5fa;stroke:#7851a1;}
+  .toggle-base {fill:#dedbd3;}
+  .toggle-ring {fill:inherit;stroke-width:1;}
+  .toggle-pivot {fill:#c6c1b5;}
+  .toggle-lever {fill:#fffdf8;stroke-width:1.4;}
+  .symbol-socket {fill:#eeeDEA;stroke:#66645e;}
 </style>
