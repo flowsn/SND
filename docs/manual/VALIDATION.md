@@ -34,9 +34,16 @@ and printed pagination were not independently tested.
 
 - Pitch and Velocity use compact control-symbol bullets instead of introductory
   paragraphs and tutorial headings; German and English both checked.
-- Shared symbols distinguish blue knobs, orange toggles and purple sockets.
+- Shared symbols distinguish blue knobs, orange row switches, green global switches and neutral sockets.
 - Global switch upper/lower labels were checked against the supplied hardware
   photo E159EC01-30DF-4FD0-8D0B-F7B454B35D0C.jpeg; Clock's middle var. label is shown.
 - Desktop and mobile screenshots inspected; MIDI chord cross-link clicked;
   all chapter anchors and existing transport smoke checks pass.
 - The rest of the manual retains the previous reading structure for now.
+
+## Connection locations and colour separation
+
+- Global switches use green, with matching green explanation boxes; knobs remain blue and row switches orange.
+- Pitch and Velocity diagrams include the bottom-left control/Add In/Out groups. Pitch CV Out and rear MIDI Out have separate bullets.
+- Physical positions checked against the German transcription (sections 2.1 and 3.1) and the manufacturer photograph: https://www.s-n-d.com/sam-16/sam-16big.jpg. The connection inset is schematic, not a complete panel drawing.
+- Production build and bilingual compact-layout browser checks pass, including the chord link, 390px page width and absence of browser errors.

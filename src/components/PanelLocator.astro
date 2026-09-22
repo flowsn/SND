@@ -27,6 +27,16 @@ const globalControls = [
       <span class="panel-row-label">{control.label}</span>
       {Array.from({length:16},(_,i)=><span class:list={['panel-cell',{'target-control':rows.includes(control.id) && (!firstStep || i===0)}]}><ControlSymbol kind={control.kind === 'locator-knob' ? 'knob' : 'switch'}/></span>)}
     </div>)}
+    {(rows.includes('pitch') || rows.includes('velocity')) && <div class="connection-map">
+      <strong>{language === 0 ? 'Vorderseite · unterste Reihe, links ↙' : 'Front panel · bottom row, left ↙'}</strong>
+      <div class="connection-groups">{['pitch','velocity'].map((row,i)=><div class:list={['connection-group',{'connection-active':rows.includes(row)}]}>
+        <span class="connection-name">{i+1} · {i === 0 ? 'Pitch' : 'Velocity'}</span>
+        <div class="connection-item tone-knob"><ControlSymbol kind="knob"/><span>{language === 0 ? 'Add-In-Regler' : 'Add In control'}</span></div>
+        <div class="connection-item tone-socket"><ControlSymbol kind="socket"/><strong>{i+1} · Add In</strong></div>
+        <div class="connection-item tone-socket"><ControlSymbol kind="socket"/><strong>{i+1} · Out</strong></div>
+      </div>)}</div>
+      {rows.includes('pitch') && <div class="rear-connection tone-socket"><ControlSymbol kind="socket"/><div><strong>MIDI Out</strong><br/>{language === 0 ? 'Rückseite · separat von den CV-Buchsen' : 'Rear panel · separate from the CV sockets'}</div></div>}
+    </div>}
     <div class="panel-global-caption">{language === 0 ? 'Globale Bedienelemente · unten rechts ↘' : 'Global controls · bottom right ↘'}</div>
     <div class="scroll-hint">{language === 0 ? '↔ Schalterreihe seitlich verschieben' : '↔ Scroll the switch row sideways'}</div>
     <div class="global-scroll"><div class="panel-globals">{globalControls.map(control=><div class:list={['global-cell',control.name === 'Encoder' ? 'tone-knob' : 'tone-global',{'target-control':globals.includes(control.name)}]}><span class="position-label">{control.up}</span><div class="switch-drawing">{control.middle && <small>{control.middle}</small>}<ControlSymbol kind={control.name === 'Encoder' ? 'knob' : 'switch'} scope="global"/></div><span class="position-label">{control.down || '\u00a0'}</span><strong>{control.name}</strong></div>)}</div></div>
@@ -46,15 +56,23 @@ const globalControls = [
   .locator-knob {width:18px; height:18px; border:2px solid #88857b; border-radius:50%; position:relative; background:#e3e0d7;}
   .locator-knob::after {content:''; position:absolute; height:5px; width:2px; background:#666; top:1px; left:6px;}
   .locator-switch {width:6px; height:15px; background:#bdb9ad; border:1px solid #8d897d; border-radius:4px;}
-  .tone-knob {--control-fill:#e7f0fb;--control-edge:#b4cde6;}
-  .tone-step {--control-fill:#fff0da;--control-edge:#ddbe90;}
-  .tone-global {--control-fill:#eee5f8;--control-edge:#c8afdf;}
+  .tone-knob {--control-fill:#e7f0fb;--control-edge:#3677b5;}
+  .tone-step {--control-fill:#fff0da;--control-edge:#b56b18;}
+  .tone-global {--control-fill:#dcf2d2;--control-edge:#478438;}
   .row-highlight {background:var(--control-fill); color:#252525;}
   .panel-cell:not(.target-control) {opacity:.28;}
   .target-control {background:var(--control-fill); outline:1px solid var(--control-edge);}
   .panel-cell :global(svg) {width:22px;height:22px;}
   .target-control .locator-knob {background:#fff; border-color:#fff;}
   .target-control .locator-switch {background:#fff; border-color:#fff;}
+  .connection-map {margin-top:16px;font-size:11px;}
+  .connection-groups {display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .connection-group {display:grid;grid-template-columns:repeat(3,1fr);gap:5px;border:1px solid #aaa69b;border-radius:5px;padding:7px;opacity:.4;}
+  .connection-active {opacity:1;border:2px solid #66645e;}
+  .connection-name {grid-column:1/-1;font-weight:750;}
+  .connection-item {display:flex;flex-direction:column;align-items:center;gap:5px;padding:7px;background:var(--control-fill);border:1px solid var(--control-edge);border-radius:4px;}
+  .tone-socket {--control-fill:#f5f4f0;--control-edge:#88847b;}
+  .rear-connection {display:flex;align-items:center;gap:10px;border:1px dashed var(--control-edge);background:var(--control-fill);padding:8px;margin-top:10px;width:fit-content;}
   .panel-global-caption {text-align:right; font-size:11px; margin:16px 0 7px;}
   .scroll-hint {display:none;font-size:10px;color:#666158;margin-bottom:5px;}
   .global-scroll {overflow-x:auto;padding:2px;}
