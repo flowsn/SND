@@ -39,7 +39,7 @@ and printed pagination were not independently tested.
   photo E159EC01-30DF-4FD0-8D0B-F7B454B35D0C.jpeg; Clock's middle var. label is shown.
 - Desktop and mobile screenshots inspected; MIDI chord cross-link clicked;
   all chapter anchors and existing transport smoke checks pass.
-- The rest of the manual retains the previous reading structure for now.
+- All remaining chapters now use concise control bullets; tables and detailed references remain available.
 
 ## Connection locations and colour separation
 
@@ -47,3 +47,10 @@ and printed pagination were not independently tested.
 - Pitch and Velocity diagrams include the bottom-left control/Add In/Out groups. Pitch CV Out and rear MIDI Out have separate bullets.
 - Physical positions checked against the German transcription (sections 2.1 and 3.1) and the manufacturer photograph: https://www.s-n-d.com/sam-16/sam-16big.jpg. The connection inset is schematic, not a complete panel drawing.
 - Production build and bilingual compact-layout browser checks pass, including the chord link, 390px page width and absence of browser errors.
+
+## Complete compact reference layout
+
+- Scale distinguishes chromatic playback, stored-note/chord playback and stopped programming via step 1 Pitch and MIDI In (source 3.6).
+- Velocity clarifies one shared knob, equal Dual velocity, opposing X-fade velocity, and chord versus first-entered note on the two channels (source 2.2). Base-channel setup is linked; the second channel is automatically the next higher channel.
+- Xfader, I/O, Cont. and all subsequent chapters use compact bilingual control bullets and retain technical details and tables.
+- Production build, all 17 bilingual chapter layouts, fragment targets, Velocity-to-channel navigation, 390px page width and browser-error checks passed. Desktop Pitch/Velocity and mobile Cont. screenshots were inspected.

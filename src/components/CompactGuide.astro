@@ -1,0 +1,24 @@
+---
+import { compactGuides } from '../data/compact-guides';
+import { guides } from '../data/guides';
+import ControlSymbol from './ControlSymbol.astro';
+import PositionText from './PositionText.astro';
+const {chapter,language=0}=Astro.props;
+---
+<ul class="compact-controls">
+{compactGuides[chapter].map(item=><li class={`tone-${item.kind === 'switch' ? item.scope === 'global' ? 'global' : 'step' : item.kind}`}>
+ {item.kind !== 'note' && <span class="control-tile"><ControlSymbol kind={item.kind} scope={item.scope} position={item.position}/></span>}
+ <div><strong>{item.title[language]}</strong><br/><PositionText text={item.text[language]}/></div>
+</li>)}
+</ul>
+<nav class="compact-links">{guides[chapter].links.map(link=><a href={`#${link.to}`}>{link.label[language]} →</a>)}</nav>
+<style>
+.compact-controls {list-style:none;padding:0;margin:1rem 0;}
+.compact-controls li {display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid #e2dfd7;line-height:1.55;font-size:.96rem;}
+.control-tile {display:inline-flex;flex:none;padding:8px;border:1px solid var(--control-edge);border-radius:4px;background:var(--control-fill);}
+.tone-knob {--control-fill:#e7f0fb;--control-edge:#3677b5;}
+.tone-step {--control-fill:#fff0da;--control-edge:#b56b18;}
+.tone-global {--control-fill:#dcf2d2;--control-edge:#478438;}
+.tone-socket {--control-fill:#f5f4f0;--control-edge:#88847b;}
+.compact-links {display:flex;gap:10px 20px;flex-wrap:wrap;margin:1rem 0;}
+</style>
